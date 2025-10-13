@@ -10,40 +10,40 @@ export default function Home() {
   const [wordCount, setWordCount] = useState(1);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [avatarState, setAvatarState] = useState("neutral");
-  const [chatScript, setChatScript] = useState([]);
-  const [displayedChat, setDisplayedChat] = useState([]);
-  const [isChatting, setIsChatting] = useState(false);
-// Chat animasi per level
-const [chatMessages, setChatMessages] = useState([]);
-const [chatIndex, setChatIndex] = useState(0);
-const [currentLevel, setCurrentLevel] = useState(0);
-
-// contoh chat schema per level
-const levelChats = [
-  [
-    { sender: "m", text: "Wahh hebat juga kamu~ 🎉" },
-    { sender: "y", text: "Haha, lumayan lah!" },
-    { sender: "m", text: "Kita lanjut ke ronde berikutnya, siap?" }
-  ],
-  [
-    { sender: "m", text: "Keren banget, kamu masih lanjut?" },
-    { sender: "y", text: "Tentu aja, aku belum mau kalah!" },
-    { sender: "m", text: "Hehehe~ semangat ya 💪" }
-  ],
-  [
-    { sender: "m", text: "Aku gak nyangka kamu sejauh ini!" },
-    { sender: "y", text: "Karena ada kamu yang nyemangatin 😏" },
-    { sender: "m", text: "Huh, dasar kamu! >///<" }
-  ],
-];
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatIndex, setChatIndex] = useState(0);
+  const [currentLevel, setCurrentLevel] = useState(0);
 
   const timerRef = useRef(null);
 
-  // ambil kata random dari API
+  // 🔊 fungsi buat mainin sound
+  const playSfx = (name) => {
+    const audio = new Audio(`/sfx/${name}.mp3`);
+    audio.volume = 0.6;
+    audio.play().catch(() => {}); // ignore autoplay errors
+  };
+
+  const levelChats = [
+    [
+      { sender: "m", text: "Wahh hebat juga kamu~ 🎉" },
+      { sender: "y", text: "Haha, lumayan lah!" },
+      { sender: "m", text: "Kita lanjut ke ronde berikutnya, siap?" },
+    ],
+    [
+      { sender: "m", text: "Keren banget, kamu masih lanjut?" },
+      { sender: "y", text: "Tentu aja, aku belum mau kalah!" },
+      { sender: "m", text: "Hehehe~ semangat ya 💪" },
+    ],
+    [
+      { sender: "m", text: "Aku gak nyangka kamu sejauh ini!" },
+      { sender: "y", text: "Karena ada kamu yang nyemangatin 😏" },
+      { sender: "m", text: "Huh, dasar kamu! >///<" },
+    ],
+  ];
+
+  // ambil kata random
   const getWord = async () => {
-    const res = await fetch(
-      `https://random-word-api.herokuapp.com/word?number=${wordCount}`
-    );
+    const res = await fetch(`https://random-word-api.herokuapp.com/word?number=${wordCount}`);
     const data = await res.json();
     setWord(data.join(" "));
   };
@@ -60,11 +60,9 @@ const levelChats = [
     const value = e.target.value;
     setInput(value);
 
-    // easter egg: langsung level up, skor reset
-    if (
-      value.trim().toUpperCase() ===
-      "AKUSAYANGKAMUJUGASAYANGTAPISAYANGKITABERJAUHAN"
-    ) {
+    // easter egg
+    if (value.trim().toUpperCase() === "AKUSAYANGKAMUJUGASAYANGTAPISAYANGKITABERJAUHAN") {
+      playSfx("shine");
       setInput("");
       setScore(0);
       setShowLevelUp(true);
@@ -73,19 +71,20 @@ const levelChats = [
       return;
     }
 
-    // mulai timer kalau belum jalan
+    // mulai timer
     if (!isRunning && score === 0 && value.length > 0) {
       setIsRunning(true);
       setAvatarState("neutral");
     }
 
-    // kalau benar
+    // benar
     if (value.trim() === word.trim()) {
       const newScore = score + 15;
       const maxTime = getMaxTime(newScore);
 
       setInput("");
       setScore(newScore);
+      playSfx("shine"); // ✅ mainin sfx
 
       // avatar happy
       setAvatarState("happy");
@@ -117,6 +116,7 @@ const levelChats = [
             clearInterval(timerRef.current);
             setIsRunning(false);
             setAvatarState("dead");
+            playSfx("sad");
             return 0;
           }
           return prev - 0.1;
@@ -126,210 +126,113 @@ const levelChats = [
     return () => clearInterval(timerRef.current);
   }, [isRunning]);
 
-  // ambil kata pertama
   useEffect(() => {
     getWord();
   }, [wordCount]);
 
   const progressWidth = (timeLeft / getMaxTime(score)) * 100;
 
-const handleNextLevel = () => {
-  setShowLevelUp(false);
-  setWordCount((prev) => prev + 1);
-  setTimeLeft(10);
-  setIsRunning(true);
-  setAvatarState("neutral");
-  getWord();
-
-  // reset chat scene
-  setChatMessages([]);
-  setChatIndex(0);
-  setCurrentLevel((prev) => (prev + 1) % levelChats.length);
-};
-
-  const handleStop = () => {
+  const handleNextLevel = () => {
     setShowLevelUp(false);
-    setIsRunning(false);
+    setWordCount((prev) => prev + 1);
+    setTimeLeft(10);
+    setIsRunning(true);
+    setAvatarState("neutral");
+    getWord();
+    setChatMessages([]);
+    setChatIndex(0);
+    setCurrentLevel((prev) => (prev + 1) % levelChats.length);
   };
 
   const renderAvatar = () => {
     switch (avatarState) {
       case "happy":
-        return (
-          <img
-            className="h-[90%]"
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp"
-          />
-        );
+        return <img className="h-[90%]" src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp" />;
       case "dead":
-        return (
-          <img
-            className="h-[90%]"
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp"
-          />
-        );
+        return <img className="h-[90%]" src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp" />;
       default:
-        return (
-          <img
-            className="h-[90%]"
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp"
-          />
-        );
+        return <img className="h-[90%]" src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp" />;
     }
   };
 
-  // animasi chat muncul satu-satu
-useEffect(() => {
-  if (showLevelUp && chatIndex < levelChats[currentLevel].length) {
-    const timer = setTimeout(() => {
-      setChatMessages((prev) => [...prev, levelChats[currentLevel][chatIndex]]);
-      setChatIndex((prev) => prev + 1);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }
-}, [chatIndex, showLevelUp]);
-
+  // animasi chat
+  useEffect(() => {
+    if (showLevelUp && chatIndex < levelChats[currentLevel].length) {
+      const timer = setTimeout(() => {
+        setChatMessages((prev) => [...prev, levelChats[currentLevel][chatIndex]]);
+        setChatIndex((prev) => prev + 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [chatIndex, showLevelUp]);
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-5 pb-20 gap-3 sm:p-20 bg-gray-900 text-white relative">
       {/* Timer bar */}
       <div className="fixed top-0 left-0 w-full h-[8px] bg-gray-700">
-        <div
-          className="h-full bg-green-400 transition-all duration-100"
-          style={{ width: `${progressWidth}%` }}
-        ></div>
+        <div className="h-full bg-green-400 transition-all duration-100" style={{ width: `${progressWidth}%` }}></div>
       </div>
 
       <main className="flex flex-col gap-5 row-start-2 items-center sm:items-start">
         <h3 className="text-2xl text-center font-bold">Score: {score}</h3>
         <h4 className="text-lg opacity-70">Mood Level: {wordCount}</h4>
 
-        {/* Avatar Box */}
+        {/* Avatar */}
         <div className="w-[500px] h-[300px] bg-white flex items-center justify-center text-black text-xl rounded-lg shadow-md transition-all duration-300">
           {renderAvatar()}
         </div>
 
         {/* Chat box */}
         <div className="flex items-start gap-3 bg-transparent w-[500px]">
-          <img
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
-            alt="Mahiru Avatar"
-            className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
-          />
+          <img src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp" alt="Mahiru" className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md" />
           <div className="flex flex-col">
-            <span className="text-sm text-gray-300 font-semibold mb-1">
-              Mahiru
-            </span>
-            <div className="bg-white text-black px-5 py-3 rounded-2xl rounded-tl-none shadow-lg max-w-[400px] text-xl font-bold whitespace-pre-wrap">
-              {word}
-            </div>
+            <span className="text-sm text-gray-300 font-semibold mb-1">Mahiru</span>
+            <div className="bg-white text-black px-5 py-3 rounded-2xl rounded-tl-none shadow-lg max-w-[400px] text-xl font-bold whitespace-pre-wrap">{word}</div>
           </div>
         </div>
 
-        {/* Input chat user */}
+        {/* Input */}
         <div className="flex flex-col items-end w-[500px]">
-          <span className="text-sm text-gray-300 font-semibold mb-1">
-            You :3
-          </span>
-          <div className="relative w-full">
-            <input
-              placeholder={
-                timeLeft === 0 ? "Game Over..." : "Ketik balasanmu di sini..."
-              }
-              value={input}
-              onChange={handleValue}
-              disabled={timeLeft === 0 || showLevelUp}
-              className="w-full border-2 focus:bg-white placeholder:text-gray-500 border-white text-black text-2xl px-5 py-3 rounded-2xl rounded-tr-none shadow-lg focus:outline-none"
-            />
-          </div>
+          <span className="text-sm text-gray-300 font-semibold mb-1">You :3</span>
+          <input
+            placeholder={timeLeft === 0 ? "Game Over..." : "Ketik balasanmu di sini..."}
+            value={input}
+            onChange={handleValue}
+            disabled={timeLeft === 0 || showLevelUp}
+            className="w-full border-2 focus:bg-white placeholder:text-gray-500 border-white text-black text-2xl px-5 py-3 rounded-2xl rounded-tr-none shadow-lg focus:outline-none"
+          />
         </div>
 
-        <p className="text-lg text-center">
-          Waktu tersisa: {timeLeft.toFixed(1)} detik
-        </p>
-        <p className="text-sm opacity-70">
-          Maksimum waktu saat ini: {getMaxTime(score)} detik
-        </p>
+        <p className="text-lg text-center">Waktu tersisa: {timeLeft.toFixed(1)} detik</p>
+        <p className="text-sm opacity-70">Maksimum waktu saat ini: {getMaxTime(score)} detik</p>
       </main>
 
-    {/* Popup Level Up (pakai chat animasi) */}
-{showLevelUp && (
-  <div className='absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center'>
-    <div className='bg-[#f7f5fe] text-black w-[500px] p-5 rounded-2xl shadow-xl'>
-      
-      {/* Chat Scene */}
-      <div className='flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto'>
-        {chatMessages.map((chat, idx) => (
-          <div key={idx} className={`flex ${chat.sender === "m" ? "items-start" : "items-end justify-end"}`}>
-            {chat.sender === "m" && (
-              <img
-                src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp'
-                alt='Mahiru Avatar'
-                className='w-10 h-10 rounded-full mr-2'
-              />
-            )}
-            <div
-              className={`px-4 py-2 rounded-2xl shadow-md text-lg max-w-[70%] ${
-                chat.sender === "m"
-                  ? "bg-gray-200 text-black rounded-tl-none"
-                  : "bg-green-500 text-white rounded-tr-none"
-              }`}
-            >
-              {chat.text}
+      {/* Popup level up */}
+      {showLevelUp && (
+        <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center">
+          <div className="bg-[#f7f5fe] text-black w-[500px] p-5 rounded-2xl shadow-xl">
+            <div className="flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto">
+              {chatMessages.map((chat, idx) => (
+                <div key={idx} className={`flex ${chat.sender === "m" ? "items-start" : "items-end justify-end"}`}>
+                  {chat.sender === "m" && (
+                    <img src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp" alt="Mahiru" className="w-10 h-10 rounded-full mr-2" />
+                  )}
+                  <div
+                    className={`px-4 py-2 rounded-2xl shadow-md text-lg max-w-[70%] ${
+                      chat.sender === "m" ? "bg-gray-200 text-black rounded-tl-none" : "bg-green-500 text-white rounded-tr-none"
+                    }`}
+                  >
+                    {chat.text}
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        ))}
-      </div>
 
-      {/* Tombol muncul kalau semua chat sudah tampil */}
-      {chatIndex >= levelChats[currentLevel].length && (
-        <button
-          onClick={handleNextLevel}
-          className='mt-3 px-6 py-3 bg-green-500 hover:bg-green-600 rounded-lg text-white font-bold w-full'
-        >
-          Mulai Level Berikutnya 🚀
-        </button>
-      )}
-    </div>
-  </div>
-)}
-
-
-      {/* Animasi Chat Level */}
-      {isChatting && (
-        <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center">
-          <div className="bg-white text-black w-[500px] rounded-2xl p-5 max-h-[400px] overflow-y-auto shadow-lg">
-            {displayedChat.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex mb-4 ${msg.m ? "justify-start" : "justify-end"}`}
-              >
-                {msg.m && (
-                  <div className="flex items-start gap-2">
-                    <img
-                      src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
-                      alt="Mahiru"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="bg-gray-200 text-black px-4 py-2 rounded-2xl rounded-tl-none max-w-[300px]">
-                      {msg.m}
-                    </div>
-                  </div>
-                )}
-                {msg.y && (
-                  <div className="flex items-start gap-2">
-                    <div className="bg-green-500 text-white px-4 py-2 rounded-2xl rounded-tr-none max-w-[300px]">
-                      {msg.y}
-                    </div>
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/194/194938.png"
-                      alt="You"
-                      className="w-10 h-10 rounded-full"
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+            {chatIndex >= levelChats[currentLevel].length && (
+              <button onClick={handleNextLevel} className="mt-3 px-6 py-3 bg-green-500 hover:bg-green-600 rounded-lg text-white font-bold w-full">
+                Mulai Level Berikutnya 🚀
+              </button>
+            )}
           </div>
         </div>
       )}
