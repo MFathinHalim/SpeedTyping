@@ -21,6 +21,7 @@ laughter, friendship, and a girl named Mahiru, who sees you for who you truly ar
 
 ## 👥 Development Team (from SMAN 1 Rejang Lebong!)
 <img width="840" height="749" alt="image" src="https://github.com/user-attachments/assets/a02d9ec2-24ea-41d9-95e0-ed1286e51803" />
+
 | Role              | Name                 | Class |
 | ----------------- | -------------------- | ----- |
 | 🎨 Illustrator    | **Aqila Raya Syifa** | X.8   |
