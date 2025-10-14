@@ -1,6 +1,15 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+function showHitEffect(type) {
+    const effect = document.createElement("div");
+    effect.className = `hit-effect ${type}`; // misal: "sick", "good", "bad"
+    effect.textContent = type.toUpperCase() + "!!";
+    effect.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+    effect.style.top = `${40 + (Math.random() * 10 - 5)}%`;
+    document.body.appendChild(effect);
 
+    setTimeout(() => effect.remove(), 700);
+}
 export default function Home() {
     const [word, setWord] = useState("loading...");
     const [input, setInput] = useState("");
@@ -47,9 +56,23 @@ export default function Home() {
     ];
 
     const getWord = async () => {
-        const res = await fetch(`https://random-word-api.herokuapp.com/word?number=${wordCount}`);
-        const data = await res.json();
-        setWord(data.join(" "));
+        try {
+            const res = await fetch("/words.json");
+            const words = await res.json();
+
+            const count = wordCount || 1;
+
+            const randomWords = [];
+            for (let i = 0; i < count; i++) {
+                const random = words[Math.floor(Math.random() * words.length)];
+                randomWords.push(random);
+            }
+
+            setWord(randomWords.join(" "));
+        } catch (err) {
+            console.error("Gagal ambil kata:", err);
+            setWord("error");
+        }
     };
 
     const getMaxTime = (score) => {
@@ -77,6 +100,9 @@ export default function Home() {
 
             setInput("");
             setScore(newScore);
+            showHitEffect("sick");
+            document.body.style.animation = "shake 0.2s";
+            setTimeout(() => (document.body.style.animation = ""), 200);
             playSfx("shine");
             setAvatarState("happy");
             setTimeout(() => setAvatarState("neutral"), 500);
@@ -135,6 +161,16 @@ export default function Home() {
         }, 150);
         return () => clearInterval(interval);
     }, [isRunning, input]);
+
+    useEffect(() => {
+        if (!startTime || !isRunning) return;
+        const interval = setInterval(() => {
+            const timeElapsed = (Date.now() - startTime) / 60000; // menit
+            const wordsTyped = typedChars / 5; // asumsi 1 kata = 5 huruf
+            setWpm(Math.round(wordsTyped / timeElapsed));
+        }, 500);
+        return () => clearInterval(interval);
+    }, [startTime, typedChars, isRunning]);
 
     useEffect(() => {
         getWord();
@@ -200,11 +236,10 @@ export default function Home() {
 
                 <main className='w-full max-w-[500px] flex flex-col gap-4 items-center text-center'>
                     <h1 className='text-4xl font-bold mb-0'>Paperline</h1>
-                    <h3 className='text-2xl font-bold'>Score: {score}</h3>
+                    <h3 className='text-2xl font-bold mb-0'>Score: {score}</h3>
                     <div className='flex justify-between w-full text-sm sm:text-base opacity-70'>
                         <p>Highscore: {highScore}</p>
                         <p>Mood Level: {wordCount}</p>
-
                     </div>
 
                     <div className='w-full aspect-video bg-white flex items-center justify-center text-black text-xl rounded-lg border'>{renderAvatar()}</div>
@@ -233,6 +268,7 @@ export default function Home() {
                             className='w-full border-1 bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none shadow-sm focus:outline-none'
                         />
                     </div>
+                    <p className='text-lg my-0 font-semibold text-gray-600'>WPM: {wpm}</p>
                 </main>
 
                 {showLevelUp && (
@@ -306,8 +342,37 @@ export default function Home() {
             <div
                 className='w-full bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 border-t inset-0 z-50 flex flex-col items-center justify-center 
     px-6 py-10 text-gray-800 overflow-y-auto animate-fadein'>
-                {/* Title */}
-                <h2 className='text-2xl sm:text-3xl md:text-4xl font-extrabold mb-6 drop-shadow'>Multiverse {">"} Paperline: Fantastic Four</h2>
+                <div className='max-w-[700px] bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left'>
+                    <h3 className='text-xl sm:text-2xl font-bold text-pink-600 mb-3'>🌸 Synopsis</h3>
+                    <p className='text-gray-700 leading-relaxed text-base sm:text-lg'>
+                        You play as a boy born into a wealthy family — the son of a world-famous fashion designer. After your mother’s passing, your life has been nothing but
+                        rules, schedules, and the spotlight. You’ve never gone to a normal school, never had real friends — until now.
+                    </p>
+                    <p className='text-gray-700 leading-relaxed mt-3 text-base sm:text-lg'>
+                        At 15, after a heated argument with your father, you finally earn permission to attend a public high school. But there’s a catch — you must still obey
+                        all his wishes and maintain your image as a “perfect model.”
+                    </p>
+                    <p className='text-gray-700 leading-relaxed mt-3 text-base sm:text-lg'>
+                        At first, school life feels strange and distant. Yet slowly, you begin to feel warmth you’ve never known before: laughter, friendship, and a girl named{" "}
+                        <strong>Mahiru</strong>, who sees you for who you truly are — not the designer’s son, but <em>you</em>.
+                    </p>
+                </div>
+
+                <div className='max-w-[700px] mt-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left'>
+                    <h3 className='text-xl sm:text-2xl font-bold text-pink-600 mb-3'>🕹️ How to Play</h3>
+                    <ul className='list-disc list-inside text-gray-700 leading-relaxed text-base sm:text-lg space-y-2'>
+                        <li>
+                            Tulis kata pertama yang diucap <strong>Mahiru</strong> untuk memulai permainan.
+                        </li>
+                        <li>Ketik kata yang muncul di layar secepat mungkin untuk mendapatkan skor.</li>
+                        <li>Setiap kata benar akan menambah skor dan mengganti kata baru.</li>
+                        <li>Waktu terbatas! Ketika timer habis, permainan berakhir.</li>
+                        <li>
+                            Setiap kelipatan skor <strong>300</strong> akan memunculkan lore ceritanya dan pilihan untuk lanjut ke level berikutnya dengan lebih banyak kata!
+                        </li>
+                    </ul>
+                </div>
+                <h2 className='text-2xl sm:text-3xl md:text-4xl font-extrabold my-6 drop-shadow'>Multiverse {">"} Paperline: Fantastic Four</h2>
 
                 {/* Team Photo */}
                 <div className='flex justify-center w-full mb-8'>
@@ -331,41 +396,7 @@ export default function Home() {
                     </p>
                 </div>
 
-                {/* School Info */}
                 <p className='my-6 text-gray-600 italic text-sm sm:text-base'>SMAN 1 Rejang Lebong — Angkatan 28</p>
-
-                {/* Synopsis */}
-                <div className='max-w-[700px] bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left'>
-                    <h3 className='text-xl sm:text-2xl font-bold text-pink-600 mb-3'>🌸 Synopsis</h3>
-                    <p className='text-gray-700 leading-relaxed text-base sm:text-lg'>
-                        You play as a boy born into a wealthy family — the son of a world-famous fashion designer. After your mother’s passing, your life has been nothing but
-                        rules, schedules, and the spotlight. You’ve never gone to a normal school, never had real friends — until now.
-                    </p>
-                    <p className='text-gray-700 leading-relaxed mt-3 text-base sm:text-lg'>
-                        At 15, after a heated argument with your father, you finally earn permission to attend a public high school. But there’s a catch — you must still obey
-                        all his wishes and maintain your image as a “perfect model.”
-                    </p>
-                    <p className='text-gray-700 leading-relaxed mt-3 text-base sm:text-lg'>
-                        At first, school life feels strange and distant. Yet slowly, you begin to feel warmth you’ve never known before: laughter, friendship, and a girl named{" "}
-                        <strong>Mahiru</strong>, who sees you for who you truly are — not the designer’s son, but <em>you</em>.
-                    </p>
-                </div>
-
-                {/* How to Play */}
-                <div className='max-w-[700px] mt-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left'>
-                    <h3 className='text-xl sm:text-2xl font-bold text-pink-600 mb-3'>🕹️ How to Play</h3>
-                    <ul className='list-disc list-inside text-gray-700 leading-relaxed text-base sm:text-lg space-y-2'>
-                        <li>
-                            Tulis kata pertama yang diucap <strong>Mahiru</strong> untuk memulai permainan.
-                        </li>
-                        <li>Ketik kata yang muncul di layar secepat mungkin untuk mendapatkan skor.</li>
-                        <li>Setiap kata benar akan menambah skor dan mengganti kata baru.</li>
-                        <li>Waktu terbatas! Ketika timer habis, permainan berakhir.</li>
-                        <li>
-                            Setiap kelipatan skor <strong>300</strong> akan memunculkan lore ceritanya dan pilihan untuk lanjut ke level berikutnya dengan lebih banyak kata!
-                        </li>
-                    </ul>
-                </div>
             </div>
         </>
     );

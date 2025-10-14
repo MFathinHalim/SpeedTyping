@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -26,4 +27,28 @@ body {
 input::focus {
   outline: none !important;
   border: none !important;
+}
+
+.hit-effect {
+  position: fixed;
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: 'Comic Neue', 'Comic Sans MS', 'Comic Sans', cursive;
+  color: #fff;
+  -webkit-text-stroke: 2px #000; /* ini bikin outline hitam */
+  animation: pop 0.7s ease-out forwards;
+  pointer-events: none;
+  z-index: 999;
+}
+
+@keyframes pop {
+  0% { opacity: 1; transform: scale(1); }
+  50% { transform: scale(1.3) rotate(5deg); }
+  100% { opacity: 0; transform: scale(0.6) translateY(-50px); }
+}
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(5px, -5px); }
+  50% { transform: translate(-5px, 5px); }
+  75% { transform: translate(3px, -3px); }
 }
