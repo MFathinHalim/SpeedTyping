@@ -1,4 +1,4 @@
-# 🌸 Project Title — Untitled School Days (Working Title)
+# 🌸 Paperline team: (still working for project title)
 ## A heartfelt story about finding freedom, friendship, and identity beyond expectations.
 
 ## 🧵 Synopsis
@@ -20,6 +20,7 @@ laughter, friendship, and a girl named Mahiru, who sees you for who you truly ar
 - ❤️ Characters you’ll grow to love
 
 ## 👥 Development Team (from SMAN 1 Rejang Lebong!)
+blob:https://web.whatsapp.com/6737447f-7c71-40a7-98b3-08aec1903567
 | Role              | Name                 | Class |
 | ----------------- | -------------------- | ----- |
 | 🎨 Illustrator    | **Aqila Raya Syifa** | X.8   |
