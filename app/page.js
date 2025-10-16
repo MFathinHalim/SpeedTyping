@@ -28,6 +28,9 @@ export default function Home() {
     const [typedChars, setTypedChars] = useState(0);
     const [startTime, setStartTime] = useState(null);
     const [wpm, setWpm] = useState(0);
+    const [combo, setCombo] = useState(0);
+    const [maxCombo, setMaxCombo] = useState(0);
+    const [multiplier, setMultiplier] = useState(1);
 
     const timerRef = useRef(null);
 
@@ -95,6 +98,20 @@ export default function Home() {
         }
 
         if (value.trim() === word.trim()) {
+            const newCombo = combo + 1;
+            setCombo(newCombo);
+            if (newCombo > maxCombo) setMaxCombo(newCombo);
+
+            const newMultiplier = 1 + Math.floor(newCombo / 10);
+            setMultiplier(newMultiplier);
+
+            if (newCombo % 10 === 0) {
+                const comboEl = document.createElement("div");
+                comboEl.className = "combo-effect";
+                comboEl.textContent = `COMBO ${newCombo}x! 🔥`;
+                document.body.appendChild(comboEl);
+                setTimeout(() => comboEl.remove(), 800);
+            }
             const newScore = score + 15;
             const maxTime = getMaxTime(newScore);
 
@@ -193,11 +210,11 @@ export default function Home() {
     const renderAvatar = () => {
         switch (avatarState) {
             case "happy":
-                return <img className='h-[85%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp' />;
+                return <img className='w-24 sm:w-28 md:w-70 max-h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp' />;
             case "dead":
-                return <img className='h-[85%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp' />;
+                return <img className='w-24 sm:w-28 md:w-70 max-h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp' />;
             default:
-                return <img className='h-[85%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp' />;
+                return <img className='w-24 sm:w-28 md:w-70 max-h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp' />;
         }
     };
 
@@ -234,16 +251,15 @@ export default function Home() {
                     <div className='h-full bg-gradient-to-r from-pink-400 to-yellow-300 transition-all duration-100' style={{ width: `${progressWidth}%` }} />
                 </div>
 
-                <main className='w-full max-w-[500px] flex flex-col gap-4 items-center text-center'>
+                <main className='w-full max-w-[500px] flex flex-col items-center text-center justify-center gap-2 sm:gap-3 md:gap-4 py-6 sm:py-8 md:py-10'>
+                    {" "}
                     <h1 className='text-4xl font-bold mb-0'>Paperline</h1>
                     <h3 className='text-2xl font-bold mb-0'>Score: {score}</h3>
                     <div className='flex justify-between w-full text-sm sm:text-base opacity-70'>
                         <p>Highscore: {highScore}</p>
                         <p>Mood Level: {wordCount}</p>
                     </div>
-
-                    <div className='w-full aspect-video bg-white flex items-center justify-center text-black text-xl rounded-lg border'>{renderAvatar()}</div>
-
+                    <div className='w-full h-[40vh] aspect-video bg-white flex items-center justify-center text-black text-xl rounded-lg border'>{renderAvatar()}</div>
                     <div className='flex items-start gap-3 bg-transparent w-full'>
                         <img
                             src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp'
@@ -257,7 +273,6 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
-
                     <div className='flex flex-col items-end w-full'>
                         <span className='text-xs sm:text-sm text-gray-900 font-semibold mb-1'>You :3</span>
                         <input
@@ -338,6 +353,18 @@ export default function Home() {
                         </div>
                     </>
                 )}
+            </div>
+            <div className='w-full bg-white border-t border-black py-10 flex flex-col items-center text-center'>
+                <h1 className='text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight'>
+                    Try{" "}
+                    <a
+                        href='/training'
+                        className='inline-block bg-gray-900 text-white px-5 py-2 rounded-xl hover:bg-gray-800 hover:scale-105 active:scale-95 transition-transform duration-200 shadow-sm'>
+                        Training Mode
+                    </a>
+                </h1>
+
+                <p className='text-gray-500 mt-3 text-base sm:text-lg'>Latih refleks dan kecepatanmu sebelum melawan dunia nyata 💪</p>
             </div>
             <div
                 className='w-full bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 border-t inset-0 z-50 flex flex-col items-center justify-center 
