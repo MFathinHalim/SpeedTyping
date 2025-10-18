@@ -13,7 +13,7 @@ function showHitEffect(type) {
 export default function Home() {
     const [word, setWord] = useState("loading...");
     const [input, setInput] = useState("");
-    const [score, setScore] = useState(0);
+    const score = useRef(0);
     const [timeLeft, setTimeLeft] = useState(10);
     const [isRunning, setIsRunning] = useState(false);
     const [highScore, setHighScore] = useState(0);
@@ -92,7 +92,7 @@ export default function Home() {
         setTypedChars((prev) => prev + 1);
         if (!startTime && value.length > 0) setStartTime(Date.now());
 
-        if (!isRunning && score === 0 && value.length > 0) {
+        if (!isRunning && score.current === 0 && value.length > 0) {
             setIsRunning(true);
             setAvatarState("neutral");
         }
@@ -112,11 +112,11 @@ export default function Home() {
                 document.body.appendChild(comboEl);
                 setTimeout(() => comboEl.remove(), 800);
             }
-            const newScore = score + 15;
+            const newScore = score.current + 15;
             const maxTime = getMaxTime(newScore);
 
             setInput("");
-            setScore(newScore);
+            score.current = newScore;
             showHitEffect("sick");
             document.body.style.animation = "shake 0.2s";
             setTimeout(() => (document.body.style.animation = ""), 200);
@@ -141,6 +141,7 @@ export default function Home() {
 
     useEffect(() => {
         if (isRunning) {
+            if (timerRef.current) return;
             timerRef.current = setInterval(() => {
                 setTimeLeft((prev) => {
                     if (prev <= 0.1) {
@@ -156,9 +157,11 @@ export default function Home() {
                         }
 
                         const savedHighScore = localStorage.getItem("highscore") || 0;
-                        if (score > savedHighScore) {
+                        console.log("Final Score:", score.current);
+                        if (parseInt(score.current) >= parseInt(savedHighScore)) {
+                            console.log("wtf");
                             setEndMessage("😏 Boleh juga ngalahin highscore... tapi tetep aja MATI 💀");
-                            localStorage.setItem("highscore", score);
+                            localStorage.setItem("highscore", parseInt(score.current));
                         } else {
                             setEndMessage("😜 CUPU! highscore aja kagak bisa dikalahin!");
                         }
@@ -168,16 +171,25 @@ export default function Home() {
                 });
             }, 100);
         }
-        return () => clearInterval(timerRef.current);
-    }, [isRunning]);
+        return () => {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        };
+    }, [isRunning, startTime, typedChars]);
 
     useEffect(() => {
         if (!isRunning) return;
-        const interval = setInterval(() => {
-            setIdleTime((prev) => (input === "" ? prev + 0.1 : 0));
-        }, 150);
-        return () => clearInterval(interval);
-    }, [isRunning, input]);
+
+        const handleTyping = () => setIdleTime(0);
+
+        window.addEventListener("keydown", handleTyping);
+        const interval = setInterval(() => setIdleTime((prev) => prev + 0.1), 150);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("keydown", handleTyping);
+        };
+    }, [isRunning]);
 
     useEffect(() => {
         if (!startTime || !isRunning) return;
@@ -193,7 +205,7 @@ export default function Home() {
         getWord();
     }, [wordCount]);
 
-    const progressWidth = (timeLeft / getMaxTime(score)) * 100;
+    const progressWidth = (timeLeft / getMaxTime(score.current)) * 100;
 
     const handleNextLevel = () => {
         setShowLevelUp(false);
@@ -210,11 +222,11 @@ export default function Home() {
     const renderAvatar = () => {
         switch (avatarState) {
             case "happy":
-                return <img className='w-24 sm:w-28 md:w-70 max-h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp' />;
+                return <img className='w-24 sm:w-28 md:w-70 h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp' />;
             case "dead":
-                return <img className='w-24 sm:w-28 md:w-70 max-h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp' />;
+                return <img className='w-24 sm:w-28 md:w-70 h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp' />;
             default:
-                return <img className='w-24 sm:w-28 md:w-70 max-h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp' />;
+                return <img className='w-24 sm:w-28 md:w-70 h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp' />;
         }
     };
 
@@ -235,8 +247,11 @@ export default function Home() {
 
     return (
         <>
+            <div className="fixed inset-0 z-[-3] bg-[url('/bg.png')] bg-center bg-repeat opacity-100"></div>
+
+            <div className='fixed inset-0 z-[-3] bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 opacity-90'></div>
             <div
-                className='min-h-screen bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 flex flex-col items-center justify-center p-6 font-sans text-gray-800 transition-all'
+                className='relative min-h-screen flex items-center justify-center font-sans text-gray-800 p-6 overflow-hidden'
                 style={{
                     filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
                 }}>
@@ -246,29 +261,39 @@ export default function Home() {
                         backgroundColor: `rgba(255, 0, 0, ${Math.min(idleTime / 8, 0.4)})`,
                         mixBlendMode: "multiply",
                     }}></div>
-
-                <div className='fixed top-0 left-0 w-full h-[6px] sm:h-[8px] bg-gray-700'>
+                <div className='fixed z-10 top-0 left-0 w-full h-[6px] sm:h-[8px] bg-gray-700'>
                     <div className='h-full bg-gradient-to-r from-pink-400 to-yellow-300 transition-all duration-100' style={{ width: `${progressWidth}%` }} />
                 </div>
-
-                <main className='w-full max-w-[500px] flex flex-col items-center text-center justify-center gap-2 sm:gap-3 md:gap-4 py-6 sm:py-8 md:py-10'>
-                    {" "}
-                    <h1 className='text-4xl font-bold mb-0'>Paperline</h1>
-                    <h3 className='text-2xl font-bold mb-0'>Score: {score}</h3>
-                    <div className='flex justify-between w-full text-sm sm:text-base opacity-70'>
-                        <p>Highscore: {highScore}</p>
-                        <p>Mood Level: {wordCount}</p>
+                <main className='w-full z-10 max-w-[500px] flex flex-col items-center text-center justify-center gap-2 sm:gap-3 md:gap-4 py-6 sm:py-8 md:py-10'>
+                    <div className="flex justify-between items-center w-full">
+                        <h1 className='text-2xl font-bold mb-0'>Paperline</h1>
+                        <h3 className='text-2xl font-bold mb-0'>Best: {highScore}</h3>
                     </div>
-                    <div className='w-full h-[40vh] aspect-video bg-white flex items-center justify-center text-black text-xl rounded-lg border'>{renderAvatar()}</div>
+                    <div className='flex justify-between mt-0 w-full text-sm sm:text-base opacity-70'>
+                        <p>Mood Level: {wordCount}</p>
+                        <p>Score: {score.current}</p>
+                    </div>
                     <div className='flex items-start gap-3 bg-transparent w-full'>
                         <img
                             src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp'
                             alt='Mahiru'
-                            className='w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover border-1 bg-white shadow-md'
+                            className='w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white'
                         />
                         <div className='flex flex-col items-start'>
-                            <span className='text-xs sm:text-sm text-gray-600 font-semibold mb-0'>Mahiru</span>
-                            <div className='bg-white text-black border px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none shadow-sm max-w-[100%] text-base sm:text-xl font-bold whitespace-pre-wrap'>
+                            <span className='text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0'>Mahiru</span>
+
+                            <div>{renderAvatar()}</div>
+                        </div>
+                    </div>
+                    <div className='flex items-start gap-3 bg-transparent w-full'>
+                        <img
+                            src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp'
+                            alt='Mahiru'
+                            className='w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white'
+                        />
+                        <div className='flex flex-col items-start'>
+                            <span className='text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0'>Mahiru</span>
+                            <div className='bg-white text-black shadow-sm px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-xl font-bold whitespace-pre-wrap'>
                                 {word}
                             </div>
                         </div>
@@ -280,14 +305,13 @@ export default function Home() {
                             value={input}
                             onChange={handleValue}
                             disabled={timeLeft === 0 || showLevelUp}
-                            className='w-full border-1 bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none shadow-sm focus:outline-none'
+                            className='w-full shadow-sm bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none shadow-sm focus:outline-none'
                         />
                     </div>
                     <p className='text-lg my-0 font-semibold text-gray-600'>WPM: {wpm}</p>
                 </main>
-
                 {showLevelUp && (
-                    <div className='absolute inset-0 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col items-center justify-center text-center px-3'>
+                    <div className='absolute inset-0 z-10 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col items-center justify-center text-center px-3'>
                         <div className='bg-[#f7f5fe] text-black w-full max-w-[500px] p-5 border'>
                             <div className='flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto'>
                                 {chatMessages.map((chat, idx) => (
@@ -319,16 +343,15 @@ export default function Home() {
                         </div>
                     </div>
                 )}
-
                 {timeLeft === 0 && (
                     <>
-                        <div className='absolute inset-0 flex flex-col items-center justify-center bg-[#2c0101]/80 text-center font-minecraft text-white select-none'>
+                        <div className='absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#2c0101]/80 text-center font-minecraft text-white select-none'>
                             <h2 className='text-6xl sm:text-7xl font-bold text-[#ff5555] drop-shadow-[0_0_10px_#ff0000] mb-3 animate-pulse'>YOU DIED</h2>
                             <p className='text-xl sm:text-2xl mb-4 text-gray-200'>{endMessage}</p>
 
                             <div className='text-lg font-bold space-y-1 mb-6'>
                                 <p>
-                                    Skor kamu: <span className='text-yellow-400'>{score}</span>
+                                    Skor kamu: <span className='text-yellow-400'>{score.current}</span>
                                 </p>
                                 <p>
                                     Highscore: <span className='text-green-400'>{highScore}</span>
@@ -354,7 +377,7 @@ export default function Home() {
                     </>
                 )}
             </div>
-            <div className='w-full bg-white border-t border-black py-10 flex flex-col items-center text-center'>
+            <div className='w-full bg-white border-t z-20 border-black py-10 flex flex-col items-center text-center'>
                 <h1 className='text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight'>
                     Try{" "}
                     <a
@@ -402,7 +425,7 @@ export default function Home() {
                 <h2 className='text-2xl sm:text-3xl md:text-4xl font-extrabold my-6 drop-shadow'>Multiverse {">"} Paperline: Fantastic Four</h2>
 
                 {/* Team Photo */}
-                <div className='flex justify-center w-full mb-8'>
+                <div className='flex justify-center w-full mb-8 z-10'>
                     <img src='/tim.png' alt='Our Team' className='w-full max-w-[700px] transition-transform duration-500 hover:scale-105 hover:rotate-1' />
                 </div>
 
