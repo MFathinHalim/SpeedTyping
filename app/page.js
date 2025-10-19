@@ -1,453 +1,591 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 function showHitEffect(type) {
-    const effect = document.createElement("div");
-    effect.className = `hit-effect ${type}`; // misal: "sick", "good", "bad"
-    effect.textContent = type.toUpperCase() + "!!";
-    effect.style.left = `${50 + (Math.random() * 20 - 10)}%`;
-    effect.style.top = `${40 + (Math.random() * 10 - 5)}%`;
-    document.body.appendChild(effect);
+  const effect = document.createElement("div");
+  effect.className = `hit-effect ${type}`; // misal: "sick", "good", "bad"
+  effect.textContent = type.toUpperCase() + "!!";
+  effect.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+  effect.style.top = `${40 + (Math.random() * 10 - 5)}%`;
+  document.body.appendChild(effect);
 
-    setTimeout(() => effect.remove(), 700);
+  setTimeout(() => effect.remove(), 700);
 }
 export default function Home() {
-    const [word, setWord] = useState("loading...");
-    const [input, setInput] = useState("");
-    const score = useRef(0);
-    const [timeLeft, setTimeLeft] = useState(10);
-    const [isRunning, setIsRunning] = useState(false);
-    const [highScore, setHighScore] = useState(0);
-    const [wordCount, setWordCount] = useState(1);
-    const [showLevelUp, setShowLevelUp] = useState(false);
-    const [avatarState, setAvatarState] = useState("neutral");
-    const [chatMessages, setChatMessages] = useState([]);
-    const [chatIndex, setChatIndex] = useState(0);
-    const [currentLevel, setCurrentLevel] = useState(0);
-    const [idleTime, setIdleTime] = useState(0);
-    const [endMessage, setEndMessage] = useState("");
-    const [typedChars, setTypedChars] = useState(0);
-    const [startTime, setStartTime] = useState(null);
-    const [wpm, setWpm] = useState(0);
-    const [combo, setCombo] = useState(0);
-    const [maxCombo, setMaxCombo] = useState(0);
-    const [multiplier, setMultiplier] = useState(1);
+  const [word, setWord] = useState("loading...");
+  const [input, setInput] = useState("");
+  const score = useRef(0);
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [isRunning, setIsRunning] = useState(false);
+  const [highScore, setHighScore] = useState(0);
+  const [wordCount, setWordCount] = useState(1);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [avatarState, setAvatarState] = useState("neutral");
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatIndex, setChatIndex] = useState(0);
+  const [currentLevel, setCurrentLevel] = useState(0);
+  const [idleTime, setIdleTime] = useState(0);
+  const [endMessage, setEndMessage] = useState("");
+  const [typedChars, setTypedChars] = useState(0);
+  const [startTime, setStartTime] = useState(null);
+  const [wpm, setWpm] = useState(0);
+  const [combo, setCombo] = useState(0);
+  const [maxCombo, setMaxCombo] = useState(0);
+  const [multiplier, setMultiplier] = useState(1);
+  const bgmRef = useRef(null);
+  const storyBgmRef = useRef(null);
+  const [isStoryMusicPlaying, setIsStoryMusicPlaying] = useState(true);
 
-    const timerRef = useRef(null);
+  const timerRef = useRef(null);
 
-    const playSfx = (name) => {
-        const audio = new Audio(`/sfx/${name}.mp3`);
-        audio.volume = 0.6;
-        audio.play().catch(() => {});
-    };
+  const playSfx = (name) => {
+    const audio = new Audio(`/sfx/${name}.mp3`);
+    audio.volume = 0.6;
+    audio.play().catch(() => {});
+  };
 
-    const levelChats = [
-        [
-            { sender: "m", text: "Wahh hebat juga kamu~ 🎉" },
-            { sender: "y", text: "Haha, lumayan lah!" },
-            { sender: "m", text: "Kita lanjut ke ronde berikutnya, siap?" },
-        ],
-        [
-            { sender: "m", text: "Keren banget, kamu masih lanjut?" },
-            { sender: "y", text: "Tentu aja, aku belum mau kalah!" },
-            { sender: "m", text: "Hehehe~ semangat ya 💪" },
-        ],
-        [
-            { sender: "m", text: "Aku gak nyangka kamu sejauh ini!" },
-            { sender: "y", text: "Karena ada kamu yang nyemangatin 😏" },
-            { sender: "m", text: "Huh, dasar kamu! >///<" },
-        ],
-    ];
+  const levelChats = [
+    [
+      { sender: "m", text: "Wahh hebat juga kamu~ 🎉" },
+      { sender: "y", text: "Haha, lumayan lah!" },
+      { sender: "m", text: "Kita lanjut ke ronde berikutnya, siap?" },
+    ],
+    [
+      { sender: "m", text: "Keren banget, kamu masih lanjut?" },
+      { sender: "y", text: "Tentu aja, aku belum mau kalah!" },
+      { sender: "m", text: "Hehehe~ semangat ya 💪" },
+    ],
+    [
+      { sender: "m", text: "Aku gak nyangka kamu sejauh ini!" },
+      { sender: "y", text: "Karena ada kamu yang nyemangatin 😏" },
+      { sender: "m", text: "Huh, dasar kamu! >///<" },
+    ],
+  ];
 
-    const getWord = async () => {
-        try {
-            const res = await fetch("/words.json");
-            const words = await res.json();
+  const getWord = async () => {
+    try {
+      const res = await fetch("/words.json");
+      const words = await res.json();
 
-            const count = wordCount || 1;
+      const count = wordCount || 1;
 
-            const randomWords = [];
-            for (let i = 0; i < count; i++) {
-                const random = words[Math.floor(Math.random() * words.length)];
-                randomWords.push(random);
-            }
+      const randomWords = [];
+      for (let i = 0; i < count; i++) {
+        const random = words[Math.floor(Math.random() * words.length)];
+        randomWords.push(random);
+      }
 
-            setWord(randomWords.join(" "));
-        } catch (err) {
-            console.error("Gagal ambil kata:", err);
-            setWord("error");
+      setWord(randomWords.join(" "));
+    } catch (err) {
+      console.error("Gagal ambil kata:", err);
+      setWord("error");
+    }
+  };
+
+  const getMaxTime = (score) => {
+    if (score < 50) return 10;
+    if (score < 150) return 8;
+    if (score < 300) return 6;
+    if (score < 500) return 5;
+    return 4;
+  };
+
+  const handleValue = (e) => {
+    const value = e.target.value;
+    setInput(value);
+    setTypedChars((prev) => prev + 1);
+    if (!startTime && value.length > 0) setStartTime(Date.now());
+
+    if (!isRunning && score.current === 0 && value.length > 0) {
+      if (!bgmRef.current) {
+        bgmRef.current = new Audio("/sfx/bg.mp3");
+        bgmRef.current.loop = true;
+        bgmRef.current.volume = 0.4;
+        bgmRef.current.play().catch(() => {});
+      }
+
+      setIsRunning(true);
+      setAvatarState("neutral");
+    }
+
+    if (value.trim() === word.trim()) {
+      const newCombo = combo + 1;
+      setCombo(newCombo);
+      if (newCombo > maxCombo) setMaxCombo(newCombo);
+
+      const newMultiplier = 1 + Math.floor(newCombo / 10);
+      setMultiplier(newMultiplier);
+
+      if (newCombo % 10 === 0) {
+        const comboEl = document.createElement("div");
+        comboEl.className = "combo-effect";
+        comboEl.textContent = `COMBO ${newCombo}x! 🔥`;
+        document.body.appendChild(comboEl);
+        setTimeout(() => comboEl.remove(), 800);
+      }
+      const newScore = score.current + 15;
+      const maxTime = getMaxTime(newScore);
+
+      setInput("");
+      score.current = newScore;
+      showHitEffect("sick");
+      document.body.style.animation = "shake 0.2s";
+      setTimeout(() => (document.body.style.animation = ""), 200);
+      playSfx("shine");
+      setAvatarState("happy");
+      setTimeout(() => setAvatarState("neutral"), 500);
+
+      if (newScore % 300 === 0) {
+        setShowLevelUp(true);
+        setIsRunning(false);
+        clearInterval(timerRef.current);
+        if (bgmRef.current) {
+          bgmRef.current.pause();
+          bgmRef.current.currentTime = 0;
         }
-    };
 
-    const getMaxTime = (score) => {
-        if (score < 50) return 10;
-        if (score < 150) return 8;
-        if (score < 300) return 6;
-        if (score < 500) return 5;
-        return 4;
-    };
-
-    const handleValue = (e) => {
-        const value = e.target.value;
-        setInput(value);
-        setTypedChars((prev) => prev + 1);
-        if (!startTime && value.length > 0) setStartTime(Date.now());
-
-        if (!isRunning && score.current === 0 && value.length > 0) {
-            setIsRunning(true);
-            setAvatarState("neutral");
+        if (!storyBgmRef.current) {
+          storyBgmRef.current = new Audio("/sfx/bgstory.mp3");
+          storyBgmRef.current.loop = true;
+          storyBgmRef.current.volume = 0.5;
         }
+        storyBgmRef.current.play().catch(() => {});
+        setIsStoryMusicPlaying(true);
+      } else {
+        getWord();
+      }
 
-        if (value.trim() === word.trim()) {
-            const newCombo = combo + 1;
-            setCombo(newCombo);
-            if (newCombo > maxCombo) setMaxCombo(newCombo);
+      setTimeLeft((prev) => {
+        const newTime = prev + 3;
+        return newTime > maxTime ? maxTime : newTime;
+      });
+    }
+  };
 
-            const newMultiplier = 1 + Math.floor(newCombo / 10);
-            setMultiplier(newMultiplier);
-
-            if (newCombo % 10 === 0) {
-                const comboEl = document.createElement("div");
-                comboEl.className = "combo-effect";
-                comboEl.textContent = `COMBO ${newCombo}x! 🔥`;
-                document.body.appendChild(comboEl);
-                setTimeout(() => comboEl.remove(), 800);
-            }
-            const newScore = score.current + 15;
-            const maxTime = getMaxTime(newScore);
-
-            setInput("");
-            score.current = newScore;
-            showHitEffect("sick");
-            document.body.style.animation = "shake 0.2s";
-            setTimeout(() => (document.body.style.animation = ""), 200);
-            playSfx("shine");
-            setAvatarState("happy");
-            setTimeout(() => setAvatarState("neutral"), 500);
-
-            if (newScore % 300 === 0) {
-                setShowLevelUp(true);
-                setIsRunning(false);
-                clearInterval(timerRef.current);
-            } else {
-                getWord();
-            }
-
-            setTimeLeft((prev) => {
-                const newTime = prev + 3;
-                return newTime > maxTime ? maxTime : newTime;
-            });
-        }
-    };
-
-    useEffect(() => {
-        if (isRunning) {
-            if (timerRef.current) return;
-            timerRef.current = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev <= 0.1) {
-                        clearInterval(timerRef.current);
-                        setIsRunning(false);
-                        setAvatarState("dead");
-                        playSfx("sad");
-
-                        if (startTime) {
-                            const timeElapsed = (Date.now() - startTime) / 60000;
-                            const wordsTyped = typedChars / 5;
-                            setWpm(Math.round(wordsTyped / timeElapsed));
-                        }
-
-                        const savedHighScore = localStorage.getItem("highscore") || 0;
-                        console.log("Final Score:", score.current);
-                        if (parseInt(score.current) >= parseInt(savedHighScore)) {
-                            console.log("wtf");
-                            setEndMessage("😏 Boleh juga ngalahin highscore... tapi tetep aja MATI 💀");
-                            localStorage.setItem("highscore", parseInt(score.current));
-                        } else {
-                            setEndMessage("😜 CUPU! highscore aja kagak bisa dikalahin!");
-                        }
-                        return 0;
-                    }
-                    return prev - 0.1;
-                });
-            }, 100);
-        }
-        return () => {
+  useEffect(() => {
+    if (isRunning) {
+      if (timerRef.current) return;
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 0.1) {
             clearInterval(timerRef.current);
-            timerRef.current = null;
-        };
-    }, [isRunning, startTime, typedChars]);
+            setIsRunning(false);
+            setAvatarState("dead");
+            playSfx("sad");
 
-    useEffect(() => {
-        if (!isRunning) return;
+            if (startTime) {
+              const timeElapsed = (Date.now() - startTime) / 60000;
+              const wordsTyped = typedChars / 5;
+              setWpm(Math.round(wordsTyped / timeElapsed));
+            }
 
-        const handleTyping = () => setIdleTime(0);
-
-        window.addEventListener("keydown", handleTyping);
-        const interval = setInterval(() => setIdleTime((prev) => prev + 0.1), 150);
-
-        return () => {
-            clearInterval(interval);
-            window.removeEventListener("keydown", handleTyping);
-        };
-    }, [isRunning]);
-
-    useEffect(() => {
-        if (!startTime || !isRunning) return;
-        const interval = setInterval(() => {
-            const timeElapsed = (Date.now() - startTime) / 60000; // menit
-            const wordsTyped = typedChars / 5; // asumsi 1 kata = 5 huruf
-            setWpm(Math.round(wordsTyped / timeElapsed));
-        }, 500);
-        return () => clearInterval(interval);
-    }, [startTime, typedChars, isRunning]);
-
-    useEffect(() => {
-        getWord();
-    }, [wordCount]);
-
-    const progressWidth = (timeLeft / getMaxTime(score.current)) * 100;
-
-    const handleNextLevel = () => {
-        setShowLevelUp(false);
-        setWordCount((prev) => prev + 1);
-        setTimeLeft(10);
-        setIsRunning(true);
-        setAvatarState("neutral");
-        getWord();
-        setChatMessages([]);
-        setChatIndex(0);
-        setCurrentLevel((prev) => (prev + 1) % levelChats.length);
+            const savedHighScore = localStorage.getItem("highscore") || 0;
+            console.log("Final Score:", score.current);
+            if (parseInt(score.current) >= parseInt(savedHighScore)) {
+              console.log("wtf");
+              setEndMessage(
+                "😏 Boleh juga ngalahin highscore... tapi tetep aja MATI 💀"
+              );
+              localStorage.setItem("highscore", parseInt(score.current));
+            } else {
+              setEndMessage("😜 CUPU! highscore aja kagak bisa dikalahin!");
+            }
+            return 0;
+          }
+          return prev - 0.1;
+        });
+      }, 100);
+    }
+    return () => {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     };
+  }, [isRunning, startTime, typedChars]);
 
-    const renderAvatar = () => {
-        switch (avatarState) {
-            case "happy":
-                return <img className='w-24 sm:w-28 md:w-70 h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp' />;
-            case "dead":
-                return <img className='w-24 sm:w-28 md:w-70 h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp' />;
-            default:
-                return <img className='w-24 sm:w-28 md:w-70 h-[90%] object-contain' src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp' />;
-        }
+  useEffect(() => {
+    if (!isRunning) return;
+
+    const handleTyping = () => setIdleTime(0);
+
+    window.addEventListener("keydown", handleTyping);
+    const interval = setInterval(() => setIdleTime((prev) => prev + 0.1), 150);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("keydown", handleTyping);
     };
+  }, [isRunning]);
 
-    useEffect(() => {
-        if (showLevelUp && chatIndex < levelChats[currentLevel].length) {
-            const timer = setTimeout(() => {
-                setChatMessages((prev) => [...prev, levelChats[currentLevel][chatIndex]]);
-                setChatIndex((prev) => prev + 1);
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [chatIndex, showLevelUp]);
+  useEffect(() => {
+    if (!startTime || !isRunning) return;
+    const interval = setInterval(() => {
+      const timeElapsed = (Date.now() - startTime) / 60000; // menit
+      const wordsTyped = typedChars / 5; // asumsi 1 kata = 5 huruf
+      setWpm(Math.round(wordsTyped / timeElapsed));
+    }, 500);
+    return () => clearInterval(interval);
+  }, [startTime, typedChars, isRunning]);
 
-    useEffect(() => {
-        const savedHighScore = parseInt(localStorage.getItem("highscore") || "0");
-        setHighScore(savedHighScore);
-    }, []);
+  useEffect(() => {
+    getWord();
+  }, [wordCount]);
 
-    return (
-        <>
-            <div className="fixed inset-0 z-[-3] bg-[url('/bg.png')] bg-center bg-repeat opacity-100"></div>
+  const progressWidth = (timeLeft / getMaxTime(score.current)) * 100;
 
-            <div className='fixed inset-0 z-[-3] bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 opacity-90'></div>
-            <div
-                className='relative min-h-screen flex items-center justify-center font-sans text-gray-800 p-6 overflow-hidden'
-                style={{
-                    filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
-                }}>
-                <div
-                    className='absolute inset-0 transition-all duration-500 pointer-events-none'
-                    style={{
-                        backgroundColor: `rgba(255, 0, 0, ${Math.min(idleTime / 8, 0.4)})`,
-                        mixBlendMode: "multiply",
-                    }}></div>
-                <div className='fixed z-10 top-0 left-0 w-full h-[6px] sm:h-[8px] bg-gray-700'>
-                    <div className='h-full bg-gradient-to-r from-pink-400 to-yellow-300 transition-all duration-100' style={{ width: `${progressWidth}%` }} />
-                </div>
-                <main className='w-full z-10 max-w-[500px] flex flex-col items-center text-center justify-center gap-2 sm:gap-3 md:gap-4 py-6 sm:py-8 md:py-10'>
-                    <div className="flex justify-between items-center w-full">
-                        <h1 className='text-2xl font-bold mb-0'>Paperline</h1>
-                        <h3 className='text-2xl font-bold mb-0'>Best: {highScore}</h3>
-                    </div>
-                    <div className='flex justify-between mt-0 w-full text-sm sm:text-base opacity-70'>
-                        <p>Mood Level: {wordCount}</p>
-                        <p>Score: {score.current}</p>
-                    </div>
-                    <div className='flex items-start gap-3 bg-transparent w-full'>
-                        <img
-                            src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp'
-                            alt='Mahiru'
-                            className='w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white'
-                        />
-                        <div className='flex flex-col items-start'>
-                            <span className='text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0'>Mahiru</span>
+  const handleNextLevel = () => {
+    if (storyBgmRef.current) {
+      storyBgmRef.current.pause();
+      storyBgmRef.current.currentTime = 0;
+    }
 
-                            <div>{renderAvatar()}</div>
-                        </div>
-                    </div>
-                    <div className='flex items-start gap-3 bg-transparent w-full'>
-                        <img
-                            src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp'
-                            alt='Mahiru'
-                            className='w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white'
-                        />
-                        <div className='flex flex-col items-start'>
-                            <span className='text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0'>Mahiru</span>
-                            <div className='bg-white text-black shadow-sm px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-xl font-bold whitespace-pre-wrap'>
-                                {word}
-                            </div>
-                        </div>
-                    </div>
-                    <div className='flex flex-col items-end w-full'>
-                        <span className='text-xs sm:text-sm text-gray-900 font-semibold mb-1'>You :3</span>
-                        <input
-                            placeholder={timeLeft === 0 ? "Game Over..." : "Ketik balasanmu di sini..."}
-                            value={input}
-                            onChange={handleValue}
-                            disabled={timeLeft === 0 || showLevelUp}
-                            className='w-full shadow-sm bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none shadow-sm focus:outline-none'
-                        />
-                    </div>
-                    <p className='text-lg my-0 font-semibold text-gray-600'>WPM: {wpm}</p>
-                </main>
-                {showLevelUp && (
-                    <div className='absolute inset-0 z-10 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col items-center justify-center text-center px-3'>
-                        <div className='bg-[#f7f5fe] text-black w-full max-w-[500px] p-5 border'>
-                            <div className='flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto'>
-                                {chatMessages.map((chat, idx) => (
-                                    <div key={idx} className={`flex ${chat.sender === "m" ? "items-start" : "items-end justify-end"}`}>
-                                        {chat.sender === "m" && (
-                                            <img
-                                                src='https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp'
-                                                alt='Mahiru'
-                                                className='border bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2'
-                                            />
-                                        )}
-                                        <div
-                                            className={`px-3 sm:px-4 py-2 rounded-2xl border shadow-sm text-sm sm:text-lg max-w-full ${
-                                                chat.sender === "m" ? "bg-gray-100 text-black rounded-tl-none" : "bg-green-300 rounded-tr-none"
-                                            }`}>
-                                            {chat.text}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+    if (bgmRef.current) {
+      bgmRef.current.play().catch(() => {});
+    }
 
-                            {chatIndex >= levelChats[currentLevel].length && (
-                                <button
-                                    onClick={handleNextLevel}
-                                    className='mt-3 px-5 sm:px-6 py-2 sm:py-3 bg-green-300 border hover:bg-green-600 rounded-lg font-bold w-full'>
-                                    Lanjutkan Cerita
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )}
-                {timeLeft === 0 && (
-                    <>
-                        <div className='absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#2c0101]/80 text-center font-minecraft text-white select-none'>
-                            <h2 className='text-6xl sm:text-7xl font-bold text-[#ff5555] drop-shadow-[0_0_10px_#ff0000] mb-3 animate-pulse'>YOU DIED</h2>
-                            <p className='text-xl sm:text-2xl mb-4 text-gray-200'>{endMessage}</p>
+    setShowLevelUp(false);
+    setWordCount((prev) => prev + 1);
+    setTimeLeft(10);
+    setIsRunning(true);
+    setAvatarState("neutral");
+    getWord();
+    setChatMessages([]);
+    setChatIndex(0);
+    setCurrentLevel((prev) => (prev + 1) % levelChats.length);
+  };
 
-                            <div className='text-lg font-bold space-y-1 mb-6'>
-                                <p>
-                                    Skor kamu: <span className='text-yellow-400'>{score.current}</span>
-                                </p>
-                                <p>
-                                    Highscore: <span className='text-green-400'>{highScore}</span>
-                                </p>
-                                <p>
-                                    WPM: <span className='text-blue-400'>{wpm}</span>
-                                </p>
-                            </div>
+  const renderAvatar = () => {
+    switch (avatarState) {
+      case "happy":
+        return (
+          <img
+            className="w-full h-full object-contain"
+            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp"
+          />
+        );
+      case "dead":
+        return (
+          <img
+            className="w-full h-full object-contain"
+            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp"
+          />
+        );
+      default:
+        return (
+          <img
+            className="w-full h-full object-contain"
+            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp"
+          />
+        );
+    }
+  };
 
-                            <div className='flex flex-col sm:flex-row gap-4'>
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className='bg-[#7a3d3d] hover:bg-[#9e4d4d] active:bg-[#5c2c2c] text-white px-8 py-3 rounded-md border-4 border-[#3c1c1c] font-bold shadow-[0_4px_0_#3c1c1c] transition-all duration-200 hover:scale-105'>
-                                    Respawn
-                                </button>
-                                <button
-                                    onClick={() => open("https://www.youtube.com/watch?v=l5ZYKdul6dI")}
-                                    className='bg-gray-500 hover:bg-gray-400 active:bg-[#5c2c2c] text-white px-8 py-3 rounded-md border-4 border-[#3c1c1c] font-bold shadow-[0_4px_0_#3c1c1c] transition-all duration-200 hover:scale-105'>
-                                    Quit
-                                </button>
-                            </div>
-                        </div>
-                    </>
-                )}
+  useEffect(() => {
+    if (showLevelUp && chatIndex < levelChats[currentLevel].length) {
+      const timer = setTimeout(() => {
+        setChatMessages((prev) => [
+          ...prev,
+          levelChats[currentLevel][chatIndex],
+        ]);
+        setChatIndex((prev) => prev + 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [chatIndex, showLevelUp]);
+
+  useEffect(() => {
+    const savedHighScore = parseInt(localStorage.getItem("highscore") || "0");
+    setHighScore(savedHighScore);
+  }, []);
+
+  return (
+    <>
+      <div className="fixed inset-0 z-[-3] bg-[url('/bg.png')] overflow-x-hidden bg-cover opacity-100 max-h-screen max-w-screen"></div>
+
+      <div className="fixed inset-0 z-[-3] bg-gradient-to-br from-pink-100 overflow-x-hidden via-yellow-50 max-h-screen max-w-screen to-blue-100 opacity-90"></div>
+      <div
+        className="relative min-h-screen flex items-center justify-center font-sans text-gray-800 p-6 overflow-hidden"
+        style={{
+          filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
+        }}
+      >
+        <div
+          className="absolute inset-0 transition-all duration-500 pointer-events-none"
+          style={{
+            backgroundColor: `rgba(255, 0, 0, ${Math.min(idleTime / 8, 0.4)})`,
+            mixBlendMode: "multiply",
+          }}
+        ></div>
+        <div className="fixed z-10 top-0 left-0 w-full h-[6px] sm:h-[8px] bg-gray-700">
+          <div
+            className="h-full bg-gradient-to-r from-pink-400 to-yellow-300 transition-all duration-100"
+            style={{ width: `${progressWidth}%` }}
+          />
+        </div>
+        <main className="w-full z-10 max-w-[500px] flex flex-col items-center text-center justify-center gap-2 sm:gap-3 md:gap-4 py-6 sm:py-8 md:py-10">
+          <div className="flex justify-between items-center w-full">
+            <h1 className="text-2xl font-bold mb-0">Paperline</h1>
+            <h3 className="text-2xl font-bold mb-0">Best: {highScore}</h3>
+          </div>
+          <div className="flex justify-between mt-0 w-full text-sm sm:text-base opacity-70">
+            <p>Mood Level: {wordCount}</p>
+            <p>Score: {score.current}</p>
+          </div>
+          <div className="flex items-start gap-3 bg-transparent w-full">
+            <img
+              src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
+              alt="Mahiru"
+              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white"
+            />
+            <div className="flex flex-col items-start">
+              <span className="text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0">
+                Mahiru
+              </span>
+
+              <div className="relative w-[220px] h-[220px] sm:w-[240px] sm:h-[240px] md:w-[260px] md:h-[260px] flex items-center justify-center">{renderAvatar()}</div>
             </div>
-            <div className='w-full bg-white border-t z-20 border-black py-10 flex flex-col items-center text-center'>
-                <h1 className='text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight'>
-                    Try{" "}
-                    <a
-                        href='/training'
-                        className='inline-block bg-gray-900 text-white px-5 py-2 rounded-xl hover:bg-gray-800 hover:scale-105 active:scale-95 transition-transform duration-200 shadow-sm'>
-                        Training Mode
-                    </a>
-                </h1>
-
-                <p className='text-gray-500 mt-3 text-base sm:text-lg'>Latih refleks dan kecepatanmu sebelum melawan dunia nyata 💪</p>
+          </div>
+          <div className="flex items-start gap-3 bg-transparent w-full">
+            <img
+              src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
+              alt="Mahiru"
+              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white"
+            />
+            <div className="flex flex-col items-start">
+              <span className="text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0">
+                Mahiru
+              </span>
+              <div className="bg-white text-black shadow-sm px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-xl font-bold whitespace-pre-wrap">
+                {word}
+              </div>
             </div>
-            <div
-                className='w-full bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 border-t inset-0 z-50 flex flex-col items-center justify-center 
-    px-6 py-10 text-gray-800 overflow-y-auto animate-fadein'>
-                <div className='max-w-[700px] bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left'>
-                    <h3 className='text-xl sm:text-2xl font-bold text-pink-600 mb-3'>🌸 Synopsis</h3>
-                    <p className='text-gray-700 leading-relaxed text-base sm:text-lg'>
-                        You play as a boy born into a wealthy family — the son of a world-famous fashion designer. After your mother’s passing, your life has been nothing but
-                        rules, schedules, and the spotlight. You’ve never gone to a normal school, never had real friends — until now.
-                    </p>
-                    <p className='text-gray-700 leading-relaxed mt-3 text-base sm:text-lg'>
-                        At 15, after a heated argument with your father, you finally earn permission to attend a public high school. But there’s a catch — you must still obey
-                        all his wishes and maintain your image as a “perfect model.”
-                    </p>
-                    <p className='text-gray-700 leading-relaxed mt-3 text-base sm:text-lg'>
-                        At first, school life feels strange and distant. Yet slowly, you begin to feel warmth you’ve never known before: laughter, friendship, and a girl named{" "}
-                        <strong>Mahiru</strong>, who sees you for who you truly are — not the designer’s son, but <em>you</em>.
-                    </p>
-                </div>
-
-                <div className='max-w-[700px] mt-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left'>
-                    <h3 className='text-xl sm:text-2xl font-bold text-pink-600 mb-3'>🕹️ How to Play</h3>
-                    <ul className='list-disc list-inside text-gray-700 leading-relaxed text-base sm:text-lg space-y-2'>
-                        <li>
-                            Tulis kata pertama yang diucap <strong>Mahiru</strong> untuk memulai permainan.
-                        </li>
-                        <li>Ketik kata yang muncul di layar secepat mungkin untuk mendapatkan skor.</li>
-                        <li>Setiap kata benar akan menambah skor dan mengganti kata baru.</li>
-                        <li>Waktu terbatas! Ketika timer habis, permainan berakhir.</li>
-                        <li>
-                            Setiap kelipatan skor <strong>300</strong> akan memunculkan lore ceritanya dan pilihan untuk lanjut ke level berikutnya dengan lebih banyak kata!
-                        </li>
-                    </ul>
-                </div>
-                <h2 className='text-2xl sm:text-3xl md:text-4xl font-extrabold my-6 drop-shadow'>Multiverse {">"} Paperline: Fantastic Four</h2>
-
-                {/* Team Photo */}
-                <div className='flex justify-center w-full mb-8 z-10'>
-                    <img src='/tim.png' alt='Our Team' className='w-full max-w-[700px] transition-transform duration-500 hover:scale-105 hover:rotate-1' />
-                </div>
-
-                {/* Team Members */}
-                <div className='text-base sm:text-lg md:text-xl space-y-3 bg-white/70 backdrop-blur-md px-6 py-6 rounded-2xl shadow-lg max-w-[700px] w-full'>
-                    <p>
-                        <strong className='text-pink-600'>Aqila Raya Syifa</strong> — 🎨 <span className='font-medium'>Illustrator</span>
-                    </p>
-                    <p>
-                        <strong className='text-pink-600'>Afwa Cantika</strong> — 🎵 <span className='font-medium'>Music Composer</span>
-                    </p>
-                    <p>
-                        <strong className='text-pink-600'>Cinta Elona Gabena Nainggolan</strong> — ✍️ <span className='font-medium'>Story Writer</span>
-                    </p>
-                    <hr className='border-gray-300' />
-                    <p>
-                        <strong className='text-green-600'>M. Fathin Halim</strong> — 💻 <span className='font-medium'>Programmer</span>
-                    </p>
-                </div>
-
-                <p className='my-6 text-gray-600 italic text-sm sm:text-base'>SMAN 1 Rejang Lebong — Angkatan 28</p>
+          </div>
+          <div className="flex flex-col items-end w-full">
+            <span className="text-xs sm:text-sm text-gray-900 font-semibold mb-1">
+              You :3
+            </span>
+            <input
+              placeholder={
+                timeLeft === 0 ? "Game Over..." : "Ketik balasanmu di sini..."
+              }
+              value={input}
+              onChange={handleValue}
+              disabled={timeLeft === 0 || showLevelUp}
+              className="w-full shadow-sm bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none shadow-sm focus:outline-none"
+            />
+          </div>
+          <p className="text-lg my-0 font-semibold text-gray-600">WPM: {wpm}</p>
+        </main>
+        {showLevelUp && (
+          <div className="absolute inset-0 z-10 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col items-center justify-center text-center px-3">
+            <div className="absolute top-5 right-5 bg-white/70 backdrop-blur-md border rounded-xl px-3 py-2 shadow-md flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (!storyBgmRef.current) return;
+                  if (storyBgmRef.current.paused) {
+                    storyBgmRef.current.play();
+                    setIsStoryMusicPlaying(true);
+                  } else {
+                    storyBgmRef.current.pause();
+                    setIsStoryMusicPlaying(false);
+                  }
+                }}
+                className="text-sm font-bold text-gray-800 hover:text-pink-600 transition"
+              >
+                {isStoryMusicPlaying ? "⏸️ Pause Music" : "▶️ Play Music"}
+              </button>
             </div>
-        </>
-    );
+            <div className="bg-[#f7f5fe] text-black w-full max-w-[500px] p-5 border">
+              <div className="flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto">
+                {chatMessages.map((chat, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex ${
+                      chat.sender === "m"
+                        ? "items-start"
+                        : "items-end justify-end"
+                    }`}
+                  >
+                    {chat.sender === "m" && (
+                      <img
+                        src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
+                        alt="Mahiru"
+                        className="border bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2"
+                      />
+                    )}
+                    <div
+                      className={`px-3 sm:px-4 py-2 rounded-2xl border shadow-sm text-sm sm:text-lg max-w-full ${
+                        chat.sender === "m"
+                          ? "bg-gray-100 text-black rounded-tl-none"
+                          : "bg-green-300 rounded-tr-none"
+                      }`}
+                    >
+                      {chat.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {chatIndex >= levelChats[currentLevel].length && (
+                <button
+                  onClick={handleNextLevel}
+                  className="mt-3 px-5 sm:px-6 py-2 sm:py-3 bg-green-300 border hover:bg-green-600 rounded-lg font-bold w-full"
+                >
+                  Lanjutkan Cerita
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        {timeLeft === 0 && (
+          <>
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#2c0101]/80 text-center font-minecraft text-white select-none">
+              <h2 className="text-6xl sm:text-7xl font-bold text-[#ff5555] drop-shadow-[0_0_10px_#ff0000] mb-3 animate-pulse">
+                YOU DIED
+              </h2>
+              <p className="text-xl sm:text-2xl mb-4 text-gray-200">
+                {endMessage}
+              </p>
+
+              <div className="text-lg font-bold space-y-1 mb-6">
+                <p>
+                  Skor kamu:{" "}
+                  <span className="text-yellow-400">{score.current}</span>
+                </p>
+                <p>
+                  Highscore: <span className="text-green-400">{highScore}</span>
+                </p>
+                <p>
+                  WPM: <span className="text-blue-400">{wpm}</span>
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-[#7a3d3d] hover:bg-[#9e4d4d] active:bg-[#5c2c2c] text-white px-8 py-3 rounded-md border-4 border-[#3c1c1c] font-bold shadow-[0_4px_0_#3c1c1c] transition-all duration-200 hover:scale-105"
+                >
+                  Respawn
+                </button>
+                <button
+                  onClick={() =>
+                    open("https://www.youtube.com/watch?v=l5ZYKdul6dI")
+                  }
+                  className="bg-gray-500 hover:bg-gray-400 active:bg-[#5c2c2c] text-white px-8 py-3 rounded-md border-4 border-[#3c1c1c] font-bold shadow-[0_4px_0_#3c1c1c] transition-all duration-200 hover:scale-105"
+                >
+                  Quit
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+      <div className="w-full bg-white border-t z-20 border-black py-10 flex flex-col items-center text-center">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight">
+          Try{" "}
+          <a
+            href="/training"
+            className="inline-block bg-gray-900 text-white px-5 py-2 rounded-xl hover:bg-gray-800 hover:scale-105 active:scale-95 transition-transform duration-200 shadow-sm"
+          >
+            Training Mode
+          </a>
+        </h1>
+
+        <p className="text-gray-500 mt-3 text-base sm:text-lg">
+          Latih refleks dan kecepatanmu sebelum melawan dunia nyata 💪
+        </p>
+      </div>
+      <div
+        className="w-full bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 border-t inset-0 z-50 flex flex-col items-center justify-center 
+    px-6 py-10 text-gray-800 overflow-y-auto animate-fadein"
+      >
+        <div className="max-w-[700px] bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left">
+          <h3 className="text-xl sm:text-2xl font-bold text-pink-600 mb-3">
+            🌸 Synopsis
+          </h3>
+          <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+            You play as a boy born into a wealthy family — the son of a
+            world-famous fashion designer. After your mother’s passing, your
+            life has been nothing but rules, schedules, and the spotlight.
+            You’ve never gone to a normal school, never had real friends — until
+            now.
+          </p>
+          <p className="text-gray-700 leading-relaxed mt-3 text-base sm:text-lg">
+            At 15, after a heated argument with your father, you finally earn
+            permission to attend a public high school. But there’s a catch — you
+            must still obey all his wishes and maintain your image as a “perfect
+            model.”
+          </p>
+          <p className="text-gray-700 leading-relaxed mt-3 text-base sm:text-lg">
+            At first, school life feels strange and distant. Yet slowly, you
+            begin to feel warmth you’ve never known before: laughter,
+            friendship, and a girl named <strong>Mahiru</strong>, who sees you
+            for who you truly are — not the designer’s son, but <em>you</em>.
+          </p>
+        </div>
+
+        <div className="max-w-[700px] mt-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left">
+          <h3 className="text-xl sm:text-2xl font-bold text-pink-600 mb-3">
+            🕹️ How to Play
+          </h3>
+          <ul className="list-disc list-inside text-gray-700 leading-relaxed text-base sm:text-lg space-y-2">
+            <li>
+              Tulis kata pertama yang diucap <strong>Mahiru</strong> untuk
+              memulai permainan.
+            </li>
+            <li>
+              Ketik kata yang muncul di layar secepat mungkin untuk mendapatkan
+              skor.
+            </li>
+            <li>
+              Setiap kata benar akan menambah skor dan mengganti kata baru.
+            </li>
+            <li>Waktu terbatas! Ketika timer habis, permainan berakhir.</li>
+            <li>
+              Setiap kelipatan skor <strong>300</strong> akan memunculkan lore
+              ceritanya dan pilihan untuk lanjut ke level berikutnya dengan
+              lebih banyak kata!
+            </li>
+          </ul>
+        </div>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold my-6 drop-shadow">
+          Multiverse {">"} Paperline: Fantastic Four
+        </h2>
+
+        {/* Team Photo */}
+        <div className="flex justify-center w-full mb-8 z-10">
+          <img
+            src="/tim.png"
+            alt="Our Team"
+            className="w-full max-w-[700px] transition-transform duration-500 hover:scale-105 hover:rotate-1"
+          />
+        </div>
+
+        {/* Team Members */}
+        <div className="text-base sm:text-lg md:text-xl space-y-3 bg-white/70 backdrop-blur-md px-6 py-6 rounded-2xl shadow-lg max-w-[700px] w-full">
+          <p>
+            <strong className="text-pink-600">Aqila Raya Syifa</strong> — 🎨{" "}
+            <span className="font-medium">Illustrator</span>
+          </p>
+          <p>
+            <strong className="text-pink-600">Afwa Cantika</strong> — 🎵{" "}
+            <span className="font-medium">Music Composer</span>
+          </p>
+          <p>
+            <strong className="text-pink-600">
+              Cinta Elona Gabena Nainggolan
+            </strong>{" "}
+            — ✍️ <span className="font-medium">Story Writer</span>
+          </p>
+          <hr className="border-gray-300" />
+          <p>
+            <strong className="text-green-600">M. Fathin Halim</strong> — 💻{" "}
+            <span className="font-medium">Programmer</span>
+          </p>
+        </div>
+
+        <p className="my-6 text-gray-600 italic text-sm sm:text-base">
+          SMAN 1 Rejang Lebong — Angkatan 28
+        </p>
+      </div>
+    </>
+  );
 }
