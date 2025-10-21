@@ -20,7 +20,6 @@ function ChatUI({
 }) {
   const chatContainerRef = useRef(null);
 
-  // 🟢 1. Auto-scroll ke bawah setiap kali ada chat baru
   useEffect(() => {
     const container = chatContainerRef.current;
     if (container) {
@@ -33,9 +32,7 @@ function ChatUI({
 
   return (
     <div className="absolute inset-0 z-10 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col justify-center items-center">
-      {/* Chat container */}
       <div className="flex flex-col justify-between text-black w-full sm:max-w-[500px] md:max-h-[85%] sm:rounded-lg sm:border sm:my-6 h-full sm:h-auto">
-        {/* Chat messages */}
         <div
           ref={chatContainerRef}
           className="flex-1 flex flex-col gap-4 p-4 overflow-y-auto"
