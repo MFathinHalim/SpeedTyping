@@ -325,8 +325,8 @@ export default function Home() {
   useEffect(() => {
     if (!startTime || !isRunning) return;
     const interval = setInterval(() => {
-      const timeElapsed = (Date.now() - startTime) / 60000; // menit
-      const wordsTyped = typedChars / 5; // asumsi 1 kata = 5 huruf
+      const timeElapsed = (Date.now() - startTime) / 60000;
+      const wordsTyped = typedChars / 5;
       setWpm(Math.round(wordsTyped / timeElapsed));
     }, 500);
     return () => clearInterval(interval);
