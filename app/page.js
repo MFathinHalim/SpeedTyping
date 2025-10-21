@@ -31,6 +31,9 @@ export default function Home() {
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
+  const bgmRef = useRef(null);
+  const storyBgmRef = useRef(null);
+  const [isStoryMusicPlaying, setIsStoryMusicPlaying] = useState(true);
 
   const timerRef = useRef(null);
 
@@ -93,6 +96,13 @@ export default function Home() {
     if (!startTime && value.length > 0) setStartTime(Date.now());
 
     if (!isRunning && score.current === 0 && value.length > 0) {
+      if (!bgmRef.current) {
+        bgmRef.current = new Audio("/sfx/bg.mp3");
+        bgmRef.current.loop = true;
+        bgmRef.current.volume = 0.4;
+        bgmRef.current.play().catch(() => {});
+      }
+
       setIsRunning(true);
       setAvatarState("neutral");
     }
@@ -128,6 +138,18 @@ export default function Home() {
         setShowLevelUp(true);
         setIsRunning(false);
         clearInterval(timerRef.current);
+        if (bgmRef.current) {
+          bgmRef.current.pause();
+          bgmRef.current.currentTime = 0;
+        }
+
+        if (!storyBgmRef.current) {
+          storyBgmRef.current = new Audio("/sfx/bgstory.mp3");
+          storyBgmRef.current.loop = true;
+          storyBgmRef.current.volume = 0.5;
+        }
+        storyBgmRef.current.play().catch(() => {});
+        setIsStoryMusicPlaying(true);
       } else {
         getWord();
       }
@@ -210,6 +232,15 @@ export default function Home() {
   const progressWidth = (timeLeft / getMaxTime(score.current)) * 100;
 
   const handleNextLevel = () => {
+    if (storyBgmRef.current) {
+      storyBgmRef.current.pause();
+      storyBgmRef.current.currentTime = 0;
+    }
+
+    if (bgmRef.current) {
+      bgmRef.current.play().catch(() => {});
+    }
+
     setShowLevelUp(false);
     setWordCount((prev) => prev + 1);
     setTimeLeft(10);
@@ -226,21 +257,21 @@ export default function Home() {
       case "happy":
         return (
           <img
-            className="w-24 sm:w-28 md:w-70 h-[90%] object-contain"
+            className="w-full h-full object-contain"
             src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp"
           />
         );
       case "dead":
         return (
           <img
-            className="w-24 sm:w-28 md:w-70 h-[90%] object-contain"
+            className="w-full h-full object-contain"
             src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp"
           />
         );
       default:
         return (
           <img
-            className="w-24 sm:w-28 md:w-70 h-[90%] object-contain"
+            className="w-full h-full object-contain"
             src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp"
           />
         );
@@ -267,9 +298,9 @@ export default function Home() {
 
   return (
     <>
-      <div className="fixed inset-0 z-[-3] bg-[url('/bg.png')] bg-center bg-repeat opacity-100"></div>
+      <div className="fixed inset-0 z-[-3] bg-[url('/bg.png')] overflow-x-hidden bg-cover opacity-100 max-h-screen max-w-screen"></div>
 
-      <div className="fixed inset-0 z-[-3] bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 opacity-90"></div>
+      <div className="fixed inset-0 z-[-3] bg-gradient-to-br from-pink-100 overflow-x-hidden via-yellow-50 max-h-screen max-w-screen to-blue-100 opacity-90"></div>
       <div
         className="relative min-h-screen flex items-center justify-center font-sans text-gray-800 p-6 overflow-hidden"
         style={{
@@ -309,7 +340,9 @@ export default function Home() {
                 Mahiru
               </span>
 
-              <div>{renderAvatar()}</div>
+              <div className="relative w-[220px] h-[220px] sm:w-[240px] sm:h-[240px] md:w-[260px] md:h-[260px] flex items-center justify-center">
+                {renderAvatar()}
+              </div>
             </div>
           </div>
           <div className="flex items-start gap-3 bg-transparent w-full">
@@ -345,12 +378,33 @@ export default function Home() {
         </main>
         {showLevelUp && (
           <div className="absolute inset-0 z-10 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col items-center justify-center text-center px-3">
+            <div className="absolute top-5 right-5 bg-white/70 backdrop-blur-md border rounded-xl px-3 py-2 shadow-md flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (!storyBgmRef.current) return;
+                  if (storyBgmRef.current.paused) {
+                    storyBgmRef.current.play();
+                    setIsStoryMusicPlaying(true);
+                  } else {
+                    storyBgmRef.current.pause();
+                    setIsStoryMusicPlaying(false);
+                  }
+                }}
+                className="text-sm font-bold text-gray-800 hover:text-pink-600 transition"
+              >
+                {isStoryMusicPlaying ? "⏸️ Pause Music" : "▶️ Play Music"}
+              </button>
+            </div>
             <div className="bg-[#f7f5fe] text-black w-full max-w-[500px] p-5 border">
               <div className="flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto">
                 {chatMessages.map((chat, idx) => (
                   <div
                     key={idx}
-                    className={`flex ${chat.sender === "m" ? "items-start" : "items-end justify-end"}`}
+                    className={`flex ${
+                      chat.sender === "m"
+                        ? "items-start"
+                        : "items-end justify-end"
+                    }`}
                   >
                     {chat.sender === "m" && (
                       <img
