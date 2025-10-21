@@ -2,26 +2,375 @@
   "levels": [
     {
       "id": 1,
+
       "chats": [
-        { "sender": "m", "text": "Wahh hebat juga kamu~ 🎉" },
-        { "sender": "y", "text": "Haha, lumayan lah!" },
-        { "sender": "m", "text": "Kita lanjut ke ronde berikutnya, siap?" }
+        { "sender": "n", "text": "One day, just like any other…" },
+        {
+          "sender": "n",
+          "text": "After the school bell rang, it was time to go home. As usual, Arhan walked home from school with his friends and parted ways halfway since they lived in different directions. His house wasn't far from school, so he usually went to and from school on foot."
+        },
+        {
+          "sender": "n",
+          "text": "Finally, Arhan arrived home, continued his household chores, and later took a rest. That night, however, Arhan felt a bit bored and restless. Suddenly, it crossed his mind to text the girl he liked — one of his close friends — Amira."
+        },
+        {
+          "sender": "n",
+          "text": "Actually, their relationship was very good and friendly, but Arhan sometimes still felt awkward, stiff, and a little nervous, not knowing what to say or whether what he said was right or wrong. So, he decided to ask his best friend, Rifqi — or as he usually called him, Riki — for advice first."
+        },
+
+        { "sender": "n", "text": "--- Chat between Arhan and Riki ---" },
+        { "sender": "a", "text": "Brooo, I need your help." },
+        {
+          "sender": "r",
+          "text": "Aish, let me guess — you want advice about Mira again, right?"
+        },
+        {
+          "sender": "a",
+          "text": "Haha, yeah, you got me. That's why I need your help!"
+        },
+        {
+          "sender": "r",
+          "text": "Duh, handle it yourself for once, bro. Do you know how many times you've asked me for help just because of Mira? You're lucky I'm your best bro."
+        },
+        {
+          "sender": "a",
+          "text": "Come on, you're way more experienced with girls than I am."
+        },
+        {
+          "sender": "r",
+          "text": "What a life… having a bro who's experiencing dorm life for the first time."
+        },
+        {
+          "sender": "a",
+          "text": "Pleaseee, I'll join you later and help you push rank in Free Fire!"
+        },
+        {
+          "sender": "r",
+          "text": "What?? For real? Alright, fine. What's your question, my junior? I'll answer everything."
+        },
+        {
+          "sender": "a",
+          "text": "Ugh, now you're acting like my senior… but fine. So, I want to text Mira, but how do I make our conversation sound better?"
+        },
+        {
+          "sender": "r",
+          "text": "Isn't your relationship with her already good? You guys look close enough. You should be used to it by now."
+        },
+        {
+          "sender": "a",
+          "text": "Kinda… but sometimes I still feel awkward and stiff. The topics don't flow easily since I don't know what to talk about."
+        },
+        {
+          "sender": "r",
+          "text": "Well, that's because you always talk about school stuff or lessons. Try small talk — casual, light topics that aren't boring."
+        },
+        { "sender": "a", "text": "Yeah… but I'm afraid it'll sound cringe." },
+        {
+          "sender": "r",
+          "text": "Come on, bro. You know Mira's a kind and understanding person. Relax, be yourself, and man up a little. Don't be such a coward."
+        },
+        {
+          "sender": "a",
+          "text": "Hey! I'm not a coward, I just get nervous and awkward around her."
+        },
+        {
+          "sender": "r",
+          "text": "Then prove it. Text her now. I'm going back to my Free Fire match. Don't forget to join later, okay?"
+        },
+        { "sender": "a", "text": "Yeah, yeah, fine." }
       ]
     },
     {
       "id": 2,
+
       "chats": [
-        { "sender": "m", "text": "Keren banget, kamu masih lanjut?" },
-        { "sender": "y", "text": "Tentu aja, aku belum mau kalah!" },
-        { "sender": "m", "text": "Hehehe~ semangat ya 💪" }
+        {
+          "sender": "n",
+          "text": "After chatting with Riki, Arhan realized he really needed to be braver and stop being awkward like there was a wall between them. After a few moments of preparing himself and pushing away his fear and nervousness, he finally decided to text Mira."
+        },
+
+        { "sender": "n", "text": "--- Chat between Arhan and Mira ---" },
+        {
+          "sender": "a",
+          "text": "Hi, Mira... Are you busy right now? I'm kinda bored and have nothing to do."
+        },
+        {
+          "sender": "n",
+          "text": "Arhan waited patiently for her reply, trying to stay positive and hoping she'd respond soon."
+        },
+        {
+          "sender": "n",
+          "text": "Just a few seconds later, Mira saw his message — which instantly made Arhan nervous and anxious about her reply."
+        },
+        {
+          "sender": "m",
+          "text": "Not really, Aan. I'm just sketching and designing some clothes. You know, my hobby."
+        },
+        {
+          "sender": "a",
+          "text": "Oh, I see… That's amazing! You have such a great hobby, passion, and talent — and you never give up on it."
+        },
+        {
+          "sender": "m",
+          "text": "Hehe, thanks! But it's not that big of a deal. It's just my passion, really."
+        },
+        {
+          "sender": "a",
+          "text": "How did you know it was your passion or hobby in the first place?"
+        },
+        {
+          "sender": "m",
+          "text": "Ah, that's simple. Passion is something we love doing — something we can't stop thinking about, that makes us happy and fulfilled. That activity then becomes our hobby. I found mine after trying many things and realizing that I love designing. It makes me dream of becoming a successful and famous fashion designer one day."
+        },
+        {
+          "sender": "a",
+          "text": "Wow... I'll be waiting for that day. I hope you achieve it."
+        },
+        { "sender": "m", "text": "Hehe, thank you, Aan." },
+        { "sender": "a", "text": "By the way, do you have any other hobbies?" },
+        {
+          "sender": "m",
+          "text": "Hmm... not anything that special, but I like singing and listening to music. I usually listen to English songs and other foreign languages — like Japanese, French, or Korean. Of course, I also love Indonesian songs, but sometimes I forget their titles and only remember the chorus I hear from social media like TikTok or Instagram, hehe."
+        },
+        {
+          "sender": "a",
+          "text": "Hahaha, true! Especially those TikTok DJ songs."
+        },
+        {
+          "sender": "m",
+          "text": "For real! Indonesian DJs on TikTok are so fun, but it's kinda embarrassing when I find myself dancing to them, hahaha."
+        },
+        {
+          "sender": "a",
+          "text": "Haha, oh boy. ( ͡° ͜ʖ ͡°) Anyway, any other hobbies?"
+        },
+        {
+          "sender": "m",
+          "text": "Hmm... yeah, I like playing games — both online and offline."
+        },
+        {
+          "sender": "a",
+          "text": "Whoa, you're so talented! What kind of online games do you play?"
+        },
+        {
+          "sender": "m",
+          "text": "Usually RPGs, open-world games, some with romance or otome elements, historical settings, or strong storylines. Sometimes, I also play horror or educational puzzle games, haha."
+        },
+        {
+          "sender": "a",
+          "text": "Wow, that's a lot. What about offline games?"
+        },
+        {
+          "sender": "m",
+          "text": "Hmm... board or thinking games — like chess, shogi, and others."
+        },
+        {
+          "sender": "a",
+          "text": "That's really impressive. You've discovered your passions and hobbies so well... I still don't know what I truly want to do with all my heart."
+        }
       ]
     },
     {
       "id": 3,
       "chats": [
-        { "sender": "m", "text": "Aku gak nyangka kamu sejauh ini!" },
-        { "sender": "y", "text": "Karena ada kamu yang nyemangatin 😏" },
-        { "sender": "m", "text": "Huh, dasar kamu! >///<" }
+        {
+          "sender": "n",
+          "text": "(Mira sent a cute cat sticker looking shocked and confused, then quickly typed again.)"
+        },
+        {
+          "sender": "m",
+          "text": "Eh? Really? But... when you do taekwondo — and even earned your black belt — or when you study multiple languages, or lead the school's soccer club, you always seem happy and enjoy it... or am I wrong?"
+        },
+        {
+          "sender": "a",
+          "text": "You're not wrong, Mira. It's true that I enjoy it, but... I'm not sure it's what I truly want to do."
+        },
+        { "sender": "m", "text": "Really? Why do you feel that way?" },
+        {
+          "sender": "a",
+          "text": "Well… it's because all of that was something my father wanted. He pushed me to be perfect, to achieve things his way. To him, I was just a puppet. And... I've told you before, right? I never went to a normal school — I studied at home. It made me struggle to socialize at first. But thankfully, everyone at school is kind, and I've made good friends — including you."
+        },
+        {
+          "sender": "m",
+          "text": "I see... I'm so sorry. I shouldn't have pried or asked too much."
+        },
+        { "sender": "n", "text": "(She sent a crying cat sticker.)" },
+        {
+          "sender": "a",
+          "text": "It's okay, Mira. Thank you for caring and being considerate of my feelings. I feel better now."
+        },
+        {
+          "sender": "n",
+          "text": "(He sent a sticker of his favorite character smiling softly.)"
+        },
+        { "sender": "m", "text": "Really? Don't hide your feelings, okay?" },
+        { "sender": "a", "text": "No, really. I'm fine now." },
+        { "sender": "m", "text": "...Alright, I'll believe you." },
+        { "sender": "a", "text": "Haha, I promise!" },
+        { "sender": "m", "text": "Okay, fine." },
+        { "sender": "a", "text": "That's the spirit." },
+        {
+          "sender": "m",
+          "text": "But... if you ever have a problem, don't hesitate to talk to me, okay? I'll always be here for you and ready to listen."
+        },
+        {
+          "sender": "n",
+          "text": "(Arhan was stunned and blushed, thinking: “Damn… she's so cute, kind, and caring. Is this even good for my heart?”)"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "chats": [
+        {
+          "sender": "m",
+          "text": "Aan? Are you still there or is this the end of our chat?"
+        },
+        {
+          "sender": "a",
+          "text": "WAIT, MIRA!! I was just... uh... looking at the sky! Y-yeah, the moon looks beautiful tonight, right? Hahaha..."
+        },
+        {
+          "sender": "m",
+          "text": "Oh, I see... no need to panic, haha. I was just asking, I haven't left yet."
+        },
+        {
+          "sender": "a",
+          "text": "N-no, not at all! I was just... uh... staring at the moon, that's all!"
+        },
+        { "sender": "m", "text": "Haha, okay then, no worries." },
+        { "sender": "a", "text": "Yeah, you're right. Sorry about that." },
+        {
+          "sender": "m",
+          "text": "No need to apologize, you didn't do anything wrong."
+        },
+        {
+          "sender": "m",
+          "text": "Oh right, I just wanted to remind you of something."
+        },
+        { "sender": "a", "text": "Err... yeah? What is it?" },
+        {
+          "sender": "m",
+          "text": "I just wanted to say — keep your spirits up, okay? I know your life hasn't been easy, especially about your dad... and your mom who's now resting peacefully. But I pray and hope that good things will come your way."
+        },
+        { "sender": "a", "text": "Yeah, Mira... thank you so much." },
+        {
+          "sender": "m",
+          "text": "And about you not finding your true passion yet... how about I help you find it?"
+        },
+        { "sender": "a", "text": "Really? Won't that bother or trouble you?" },
+        {
+          "sender": "m",
+          "text": "Not at all! It's normal for friends to help each other when one's struggling. That's what friends are for!"
+        },
+        {
+          "sender": "n",
+          "text": "(Arhan couldn't stop smiling like an idiot, rolling on his bed while rereading her messages.)"
+        },
+        {
+          "sender": "n",
+          "text": "In his heart, he thought, “This is exactly why I like her so much. Even if it hurts to be called just a friend, I'll endure it. Just being close to her is enough. Come on, Arhan — like she said, stay strong!”"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "chats": [
+        {
+          "sender": "a",
+          "text": "Yeah... thank you, Mira, for helping me. I'm really glad to have a friend like you."
+        },
+        {
+          "sender": "m",
+          "text": "Me too, Aan. I'm happy to have a friend like you."
+        },
+        { "sender": "a", "text": "Yeah, thanks... I'm lucky to have met you." },
+        {
+          "sender": "n",
+          "text": "(Mira sent a cute cat sticker that said “Keep going!”)"
+        },
+        {
+          "sender": "a",
+          "text": "By the way... you really love cats, don't you?"
+        },
+        { "sender": "m", "text": "Eh? Is it that obvious? Hehe." },
+        {
+          "sender": "a",
+          "text": "Totally obvious! I like cats too, but don't you think they treat us like their servants? Haha."
+        },
+        {
+          "sender": "m",
+          "text": "Hahaha, true! But I still can't resist how cute and comforting they are."
+        },
+        {
+          "sender": "a",
+          "text": "Yeah, that makes sense. Most people feel that way when they see cats. I just don't get how some people don't like them."
+        },
+        { "sender": "m", "text": "Well, everyone has their preferences." },
+        {
+          "sender": "a",
+          "text": "Or maybe they met one of those crazy orange street cats, haha."
+        },
+        { "sender": "m", "text": "Hahaha, could be!" },
+        {
+          "sender": "n",
+          "text": "(Arhan sent a sticker of a feral orange cat looking angry and wild.)"
+        },
+        {
+          "sender": "m",
+          "text": "Whahahaha, you even sent it! But now I'm scared — it kinda looks like you when you're angry, haha, like you've got rabies!"
+        },
+        { "sender": "a", "text": "HEY!! Hahaha, you're too much!" },
+        {
+          "sender": "n",
+          "text": "Time flew by as they kept chatting for hours about random things — nothing important, but it felt so nice that they lost track of time."
+        },
+        {
+          "sender": "m",
+          "text": "Whoa, Aan, it's already 11 p.m.! I think we should stop for today."
+        },
+        { "sender": "a", "text": "Yeah, you're right. Let's stop for today." },
+        {
+          "sender": "m",
+          "text": "I should sleep early so I won't be late for school tomorrow."
+        },
+        {
+          "sender": "a",
+          "text": "Eh, but aren't you always late, Mira? Even if you sleep early, I doubt it'll help, haha."
+        },
+        {
+          "sender": "m",
+          "text": "Hey! No, I'll wake up early this time and not be late!"
+        },
+        {
+          "sender": "a",
+          "text": "We'll see about that, haha. Good luck — I'll be watching tomorrow!"
+        },
+        {
+          "sender": "m",
+          "text": "Erm... by the way, Mira... can I ask you something?"
+        },
+        { "sender": "m", "text": "Of course! What is it, Aan?" },
+        {
+          "sender": "a",
+          "text": "I know this might sound weird, but... is it okay if I chat with you more often — both in person and through messages?"
+        },
+        { "sender": "m", "text": "That's all? Haha, of course you can, Aan." },
+        { "sender": "a", "text": "Eh? Really?" },
+        { "sender": "m", "text": "Yeah! Why would I lie? Hahaha." },
+        { "sender": "a", "text": "Just making sure... hehe. Thanks." },
+        {
+          "sender": "m",
+          "text": "No need to thank me! Just chat me anytime. I also enjoy talking with you."
+        },
+        {
+          "sender": "n",
+          "text": "After the chat ended, Arhan couldn't stop smiling, thinking about their entire conversation. He wanted to keep talking, but he reminded himself that there would be another day tomorrow. He fell asleep with a bright smile on his face."
+        },
+        {
+          "sender": "n",
+          "text": "Meanwhile, Riki had been spamming Arhan with hundreds of messages — all ignored because Arhan was too busy chatting with Mira and had fallen asleep right after 11 p.m. When Riki found out the next day, he exploded with anger, while Arhan just laughed mischievously as usual and went on with his day happily."
+        }
       ]
     }
   ]

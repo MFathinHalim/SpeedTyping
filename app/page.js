@@ -10,6 +10,107 @@ function showHitEffect(type) {
 
   setTimeout(() => effect.remove(), 700);
 }
+function ChatUI({
+  chatMessages,
+  chatIndex,
+  currentLevel,
+  levelChats,
+  handleNextLevel,
+  handleSkip,
+}) {
+  const chatContainerRef = useRef(null);
+
+  // 🟢 1. Auto-scroll ke bawah setiap kali ada chat baru
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [chatMessages]);
+
+  return (
+    <div className="absolute inset-0 z-10 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col justify-center items-center">
+      {/* Chat container */}
+      <div className="flex flex-col justify-between text-black w-full sm:max-w-[500px] md:max-h-[85%] sm:rounded-lg sm:border sm:my-6 h-full sm:h-auto">
+        {/* Chat messages */}
+        <div
+          ref={chatContainerRef}
+          className="flex-1 flex flex-col gap-4 p-4 overflow-y-auto"
+        >
+          {chatMessages.map((chat, idx) => {
+            if (chat.sender === "n") {
+              return (
+                <div
+                  key={idx}
+                  className="text-center text-gray-700 italic text-sm sm:text-base px-2"
+                >
+                  {chat.text}
+                </div>
+              );
+            }
+
+            const isArhan = chat.sender === "a";
+            const profileImg =
+              chat.sender === "r"
+                ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtU35icM-Tqf_VWoC_EE_YHWwOBsImJ6FmRQ&s"
+                : chat.sender === "m"
+                  ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
+                  : "";
+
+            return (
+              <div
+                key={idx}
+                className={`flex ${
+                  isArhan
+                    ? "justify-end items-end"
+                    : "justify-start items-start"
+                }`}
+              >
+                {!isArhan && profileImg && (
+                  <img
+                    src={profileImg}
+                    alt={chat.sender}
+                    className="bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2"
+                  />
+                )}
+
+                <div
+                  className={`px-3 sm:px-4 py-2 rounded-2xl shadow-sm text-sm sm:text-lg max-w-[80%] ${
+                    isArhan
+                      ? "bg-green-200 rounded-tr-none"
+                      : "bg-gray-100 text-black rounded-tl-none"
+                  }`}
+                >
+                  {chat.text}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="p-4 border-t rounded-b-2xl bg-white flex gap-2">
+          <button
+            onClick={handleNextLevel}
+            className="flex-1 px-5 py-3 bg-green-300 border hover:bg-green-500 rounded-lg font-bold transition-all"
+          >
+            Lanjutkan Gamenya
+          </button>
+
+          {/* 🟣 2. Tombol Skip */}
+          <button
+            onClick={handleSkip}
+            className="px-5 py-3 bg-gray-200 border hover:bg-gray-300 rounded-lg font-bold transition-all"
+          >
+            Skip
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 export default function Home() {
   const [word, setWord] = useState("loading...");
   const [input, setInput] = useState("");
@@ -22,7 +123,18 @@ export default function Home() {
   const [avatarState, setAvatarState] = useState("neutral");
   const [chatMessages, setChatMessages] = useState([]);
   const [chatIndex, setChatIndex] = useState(0);
+  const [storyLevels, setStoryLevels] = useState([]);
   const [currentLevel, setCurrentLevel] = useState(0);
+
+  const getStory = async () => {
+    try {
+      const res = await fetch("/story.json");
+      const data = await res.json();
+      setStoryLevels(data.levels || []);
+    } catch (err) {
+      console.error("Gagal ambil story.json:", err);
+    }
+  };
   const [idleTime, setIdleTime] = useState(0);
   const [endMessage, setEndMessage] = useState("");
   const [typedChars, setTypedChars] = useState(0);
@@ -42,24 +154,6 @@ export default function Home() {
     audio.volume = 0.6;
     audio.play().catch(() => {});
   };
-
-  const levelChats = [
-    [
-      { sender: "m", text: "Wahh hebat juga kamu~ 🎉" },
-      { sender: "y", text: "Haha, lumayan lah!" },
-      { sender: "m", text: "Kita lanjut ke ronde berikutnya, siap?" },
-    ],
-    [
-      { sender: "m", text: "Keren banget, kamu masih lanjut?" },
-      { sender: "y", text: "Tentu aja, aku belum mau kalah!" },
-      { sender: "m", text: "Hehehe~ semangat ya 💪" },
-    ],
-    [
-      { sender: "m", text: "Aku gak nyangka kamu sejauh ini!" },
-      { sender: "y", text: "Karena ada kamu yang nyemangatin 😏" },
-      { sender: "m", text: "Huh, dasar kamu! >///<" },
-    ],
-  ];
 
   const getWord = async () => {
     try {
@@ -160,6 +254,22 @@ export default function Home() {
       });
     }
   };
+  useEffect(() => {
+    getStory();
+
+    const savedLevel = parseInt(localStorage.getItem("currentLevel") || "0");
+    const maxLevel = storyLevels.length - 1;
+
+    if (savedLevel > maxLevel) {
+      setCurrentLevel(0);
+      localStorage.setItem("currentLevel", "0");
+    } else {
+      setCurrentLevel(savedLevel);
+    }
+
+    const savedHighScore = parseInt(localStorage.getItem("highscore") || "0");
+    setHighScore(savedHighScore);
+  }, []);
 
   useEffect(() => {
     if (isRunning) {
@@ -249,7 +359,14 @@ export default function Home() {
     getWord();
     setChatMessages([]);
     setChatIndex(0);
-    setCurrentLevel((prev) => (prev + 1) % levelChats.length);
+
+    setCurrentLevel((prev) => {
+      const next = storyLevels.length
+        ? (prev + 1) % storyLevels.length
+        : prev + 1;
+      localStorage.setItem("currentLevel", next); // simpan progress level
+      return next;
+    });
   };
 
   const renderAvatar = () => {
@@ -279,22 +396,28 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (showLevelUp && chatIndex < levelChats[currentLevel].length) {
+    if (!storyLevels.length) return;
+    const currentChats = storyLevels[currentLevel]?.chats || [];
+
+    if (showLevelUp && chatIndex < currentChats.length) {
       const timer = setTimeout(() => {
-        setChatMessages((prev) => [
-          ...prev,
-          levelChats[currentLevel][chatIndex],
-        ]);
+        setChatMessages((prev) => [...prev, currentChats[chatIndex]]);
         setChatIndex((prev) => prev + 1);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [chatIndex, showLevelUp]);
+  }, [chatIndex, showLevelUp, storyLevels, currentLevel]);
 
   useEffect(() => {
     const savedHighScore = parseInt(localStorage.getItem("highscore") || "0");
     setHighScore(savedHighScore);
   }, []);
+
+  const handleSkip = () => {
+    const allChats = storyLevels[currentLevel]?.chats || [];
+    setChatMessages(allChats); // langsung tampil semua chat
+    setChatIndex(allChats.length); // update index biar lanjut bisa muncul
+  };
 
   return (
     <>
@@ -331,13 +454,13 @@ export default function Home() {
           </div>
           <div className="flex items-start gap-3 bg-transparent w-full">
             <img
-              src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
-              alt="Mahiru"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
+              alt="Mira"
               className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white"
             />
             <div className="flex flex-col items-start">
               <span className="text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0">
-                Mahiru
+                Mira
               </span>
 
               <div className="relative w-[220px] h-[220px] sm:w-[240px] sm:h-[240px] md:w-[260px] md:h-[260px] flex items-center justify-center">
@@ -347,13 +470,13 @@ export default function Home() {
           </div>
           <div className="flex items-start gap-3 bg-transparent w-full">
             <img
-              src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
-              alt="Mahiru"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
+              alt="Mira"
               className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white"
             />
             <div className="flex flex-col items-start">
               <span className="text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0">
-                Mahiru
+                Mira
               </span>
               <div className="bg-white text-black shadow-sm px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-xl font-bold whitespace-pre-wrap">
                 {word}
@@ -362,12 +485,10 @@ export default function Home() {
           </div>
           <div className="flex flex-col items-end w-full">
             <span className="text-xs sm:text-sm text-gray-900 font-semibold mb-1">
-              You :3
+              Arhan
             </span>
             <input
-              placeholder={
-                timeLeft === 0 ? "Game Over..." : "Ketik balasanmu di sini..."
-              }
+              placeholder={timeLeft === 0 ? "Game Over..." : "Your Response"}
               value={input}
               onChange={handleValue}
               disabled={timeLeft === 0 || showLevelUp}
@@ -377,65 +498,14 @@ export default function Home() {
           <p className="text-lg my-0 font-semibold text-gray-600">WPM: {wpm}</p>
         </main>
         {showLevelUp && (
-          <div className="absolute inset-0 z-10 bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 bg-opacity-80 flex flex-col items-center justify-center text-center px-3">
-            <div className="absolute top-5 right-5 bg-white/70 backdrop-blur-md border rounded-xl px-3 py-2 shadow-md flex items-center gap-2">
-              <button
-                onClick={() => {
-                  if (!storyBgmRef.current) return;
-                  if (storyBgmRef.current.paused) {
-                    storyBgmRef.current.play();
-                    setIsStoryMusicPlaying(true);
-                  } else {
-                    storyBgmRef.current.pause();
-                    setIsStoryMusicPlaying(false);
-                  }
-                }}
-                className="text-sm font-bold text-gray-800 hover:text-pink-600 transition"
-              >
-                {isStoryMusicPlaying ? "⏸️ Pause Music" : "▶️ Play Music"}
-              </button>
-            </div>
-            <div className="bg-[#f7f5fe] text-black w-full max-w-[500px] p-5 border">
-              <div className="flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto">
-                {chatMessages.map((chat, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${
-                      chat.sender === "m"
-                        ? "items-start"
-                        : "items-end justify-end"
-                    }`}
-                  >
-                    {chat.sender === "m" && (
-                      <img
-                        src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
-                        alt="Mahiru"
-                        className="border bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2"
-                      />
-                    )}
-                    <div
-                      className={`px-3 sm:px-4 py-2 rounded-2xl border shadow-sm text-sm sm:text-lg max-w-full ${
-                        chat.sender === "m"
-                          ? "bg-gray-100 text-black rounded-tl-none"
-                          : "bg-green-300 rounded-tr-none"
-                      }`}
-                    >
-                      {chat.text}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {chatIndex >= levelChats[currentLevel].length && (
-                <button
-                  onClick={handleNextLevel}
-                  className="mt-3 px-5 sm:px-6 py-2 sm:py-3 bg-green-300 border hover:bg-green-600 rounded-lg font-bold w-full"
-                >
-                  Lanjutkan Cerita
-                </button>
-              )}
-            </div>
-          </div>
+          <ChatUI
+            chatMessages={chatMessages}
+            chatIndex={chatIndex}
+            currentLevel={currentLevel}
+            levelChats={storyLevels}
+            handleNextLevel={handleNextLevel}
+            handleSkip={handleSkip}
+          />
         )}
         {timeLeft === 0 && (
           <>
@@ -519,8 +589,8 @@ export default function Home() {
           <p className="text-gray-700 leading-relaxed mt-3 text-base sm:text-lg">
             At first, school life feels strange and distant. Yet slowly, you
             begin to feel warmth you’ve never known before: laughter,
-            friendship, and a girl named <strong>Mahiru</strong>, who sees you
-            for who you truly are — not the designer’s son, but <em>you</em>.
+            friendship, and a girl named <strong>Mira</strong>, who sees you for
+            who you truly are — not the designer’s son, but <em>you</em>.
           </p>
         </div>
 
@@ -553,11 +623,11 @@ export default function Home() {
         </h2>
 
         {/* Team Photo */}
-        <div className="flex justify-center w-full mb-8 z-10">
+        <div className="flex justify-center w-full mb-8 z-10 group">
           <img
             src="/tim.png"
             alt="Our Team"
-            className="w-full max-w-[700px] transition-transform duration-500 hover:scale-105 hover:rotate-1"
+            className="w-full max-w-[700px] rounded-xl transition-all duration-700 ease-in-out blur-lg group-hover:blur-none group-hover:scale-105 group-hover:rotate-1"
           />
         </div>
 
