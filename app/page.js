@@ -23,14 +23,6 @@ export default function Home() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatIndex, setChatIndex] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(0);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("currentLevel");
-      if (saved) setCurrentLevel(parseInt(saved));
-    }
-  }, []);
-
   const [idleTime, setIdleTime] = useState(0);
   const [endMessage, setEndMessage] = useState("");
   const [typedChars, setTypedChars] = useState(0);
@@ -48,7 +40,23 @@ export default function Home() {
     audio.play().catch(() => {});
   };
 
-  const [levelChats, setLevelChats] = useState([]);
+  const levelChats = [
+    [
+      { sender: "m", text: "Wahh hebat juga kamu~ 🎉" },
+      { sender: "y", text: "Haha, lumayan lah!" },
+      { sender: "m", text: "Kita lanjut ke ronde berikutnya, siap?" },
+    ],
+    [
+      { sender: "m", text: "Keren banget, kamu masih lanjut?" },
+      { sender: "y", text: "Tentu aja, aku belum mau kalah!" },
+      { sender: "m", text: "Hehehe~ semangat ya 💪" },
+    ],
+    [
+      { sender: "m", text: "Aku gak nyangka kamu sejauh ini!" },
+      { sender: "y", text: "Karena ada kamu yang nyemangatin 😏" },
+      { sender: "m", text: "Huh, dasar kamu! >///<" },
+    ],
+  ];
 
   const getWord = async () => {
     try {
@@ -199,29 +207,9 @@ export default function Home() {
     getWord();
   }, [wordCount]);
 
-  useEffect(() => {
-    const fetchStory = async () => {
-      try {
-        const res = await fetch("/story.json");
-        const data = await res.json();
-        setLevelChats(data.levels);
-      } catch (err) {
-        console.error("Gagal ambil story:", err);
-      }
-    };
-    fetchStory();
-  }, []);
-
   const progressWidth = (timeLeft / getMaxTime(score.current)) * 100;
 
   const handleNextLevel = () => {
-    const nextLevel = (currentLevel + 1) % levelChats.length;
-    setCurrentLevel(nextLevel);
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem("currentLevel", nextLevel);
-    }
-
     setShowLevelUp(false);
     setWordCount((prev) => prev + 1);
     setTimeLeft(10);
@@ -230,6 +218,7 @@ export default function Home() {
     getWord();
     setChatMessages([]);
     setChatIndex(0);
+    setCurrentLevel((prev) => (prev + 1) % levelChats.length);
   };
 
   const renderAvatar = () => {
@@ -259,19 +248,17 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!showLevelUp || !levelChats[currentLevel]) return;
-
-    if (chatIndex < levelChats[currentLevel].chats.length) {
+    if (showLevelUp && chatIndex < levelChats[currentLevel].length) {
       const timer = setTimeout(() => {
         setChatMessages((prev) => [
           ...prev,
-          levelChats[currentLevel].chats[chatIndex],
+          levelChats[currentLevel][chatIndex],
         ]);
         setChatIndex((prev) => prev + 1);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [chatIndex, showLevelUp, levelChats, currentLevel]);
+  }, [chatIndex, showLevelUp]);
 
   useEffect(() => {
     const savedHighScore = parseInt(localStorage.getItem("highscore") || "0");
@@ -385,15 +372,14 @@ export default function Home() {
                 ))}
               </div>
 
-              {levelChats[currentLevel] &&
-                chatIndex >= levelChats[currentLevel].chats.length && (
-                  <button
-                    onClick={handleNextLevel}
-                    className="mt-3 px-5 sm:px-6 py-2 sm:py-3 bg-green-300 border hover:bg-green-600 rounded-lg font-bold w-full"
-                  >
-                    Lanjutkan Cerita
-                  </button>
-                )}
+              {chatIndex >= levelChats[currentLevel].length && (
+                <button
+                  onClick={handleNextLevel}
+                  className="mt-3 px-5 sm:px-6 py-2 sm:py-3 bg-green-300 border hover:bg-green-600 rounded-lg font-bold w-full"
+                >
+                  Lanjutkan Cerita
+                </button>
+              )}
             </div>
           </div>
         )}
