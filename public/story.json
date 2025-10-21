@@ -1,0 +1,28 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "chats": [
+        { "sender": "m", "text": "Wahh hebat juga kamu~ 🎉" },
+        { "sender": "y", "text": "Haha, lumayan lah!" },
+        { "sender": "m", "text": "Kita lanjut ke ronde berikutnya, siap?" }
+      ]
+    },
+    {
+      "id": 2,
+      "chats": [
+        { "sender": "m", "text": "Keren banget, kamu masih lanjut?" },
+        { "sender": "y", "text": "Tentu aja, aku belum mau kalah!" },
+        { "sender": "m", "text": "Hehehe~ semangat ya 💪" }
+      ]
+    },
+    {
+      "id": 3,
+      "chats": [
+        { "sender": "m", "text": "Aku gak nyangka kamu sejauh ini!" },
+        { "sender": "y", "text": "Karena ada kamu yang nyemangatin 😏" },
+        { "sender": "m", "text": "Huh, dasar kamu! >///<" }
+      ]
+    }
+  ]
+}
