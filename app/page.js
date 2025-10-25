@@ -371,22 +371,22 @@ export default function Home() {
       case "happy":
         return (
           <img
-            className="w-full h-full object-contain"
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/7.webp"
+            className="w-full h-full rounded-lg object-contain"
+            src="/terkejut.jpg"
           />
         );
       case "dead":
         return (
           <img
-            className="w-full h-full object-contain"
+            className="w-full h-full rounded-lg object-contain"
             src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp"
           />
         );
       default:
         return (
           <img
-            className="w-full h-full object-contain"
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/1.webp"
+            className="w-full h-full rounded-lg object-contain"
+            src="/happy.jpeg"
           />
         );
     }
@@ -460,7 +460,7 @@ export default function Home() {
                 Mira
               </span>
 
-              <div className="relative w-[220px] h-[220px] sm:w-[240px] sm:h-[240px] md:w-[260px] md:h-[260px] flex items-center justify-center">
+              <div className="relative shadow-sm w-[160px] h-[160px] sm:w-[140px] sm:h-[140px] md:w-[200px] md:h-[200px] flex items-center justify-center">
                 {renderAvatar()}
               </div>
             </div>
