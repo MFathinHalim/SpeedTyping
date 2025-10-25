@@ -16,24 +16,23 @@ export default function Training() {
     audio.play().catch(() => {});
   };
 
-const getWord = async () => {
-  try {
-    const res = await fetch("/words.json");
-    const words = await res.json();
+  const getWord = async () => {
+    try {
+      const res = await fetch("/words.json");
+      const words = await res.json();
 
-    const randomSentences = [];
-    for (let i = 0; i < 3; i++) {
-      const random = words[Math.floor(Math.random() * words.length)];
-      randomSentences.push(random);
+      const randomSentences = [];
+      for (let i = 0; i < 3; i++) {
+        const random = words[Math.floor(Math.random() * words.length)];
+        randomSentences.push(random);
+      }
+
+      setWord(randomSentences.join(" "));
+    } catch (err) {
+      console.error("Gagal ambil kata:", err);
+      setWord("error");
     }
-
-    setWord(randomSentences.join(" "));
-  } catch (err) {
-    console.error("Gagal ambil kata:", err);
-    setWord("error");
-  }
-};
-
+  };
 
   useEffect(() => {
     getWord();
@@ -76,7 +75,7 @@ const getWord = async () => {
 
         <div className="flex items-start gap-3 bg-transparent w-full mb-4">
           <img
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/29.webp"
+            src="/happy.jpeg"
             alt="Mahiru"
             className="w-10 h-10 rounded-full border-1 bg-white"
           />
