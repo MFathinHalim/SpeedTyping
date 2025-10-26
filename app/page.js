@@ -418,15 +418,22 @@ export default function Home() {
 
   return (
     <>
-      <div className="fixed inset-0 z-[-3] bg-[url('/bg.png')] overflow-x-hidden bg-cover opacity-100 max-h-screen max-w-screen"></div>
-
-      <div className="fixed inset-0 z-[-3] bg-gradient-to-br from-pink-100 overflow-x-hidden via-yellow-50 max-h-screen max-w-screen to-blue-100 opacity-90"></div>
+      <div className="hidden relative md:flex bg-gradient-to-br from-pink-50 via-purple-100 to-purple-50 text-black backdrop-blur-sm p-3 justify-between items-center w-full">
+        <div className="flex items-center gap-3 px-2">
+          <div>
+            <h4 className="text-3xl font-bold mb-0 text-left">Paperline</h4>
+          </div>
+        </div>
+      </div>
       <div
-        className="relative min-h-screen flex items-center justify-center font-sans text-gray-800 p-6 overflow-hidden"
+        className="relative bg-gradient-to-br from-pink-200 via-purple-100 to-purple-50
+        font-sans text-gray-800 overflow-hidden
+        min-h-screen md:pb-30 md:pt-20 md:flex md:justify-center md:p-6"
         style={{
           filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
         }}
       >
+        {/* Overlay efek idle */}
         <div
           className="absolute inset-0 transition-all duration-500 pointer-events-none"
           style={{
@@ -434,66 +441,105 @@ export default function Home() {
             mixBlendMode: "multiply",
           }}
         ></div>
+
+        {/* Progress bar */}
         <div className="fixed z-10 top-0 left-0 w-full h-[6px] sm:h-[8px] bg-gray-700">
           <div
             className="h-full bg-gradient-to-r from-pink-400 to-yellow-300 transition-all duration-100"
             style={{ width: `${progressWidth}%` }}
           />
         </div>
-        <main className="w-full z-10 max-w-[500px] flex flex-col items-center text-center justify-center gap-2 sm:gap-3 md:gap-4 py-6 sm:py-8 md:py-10">
-          <div className="flex justify-between items-center w-full">
-            <h1 className="text-2xl font-bold mb-0">Paperline</h1>
-            <h3 className="text-2xl font-bold mb-0">Best: {highScore}</h3>
-          </div>
-          <div className="flex justify-between mt-0 w-full text-sm sm:text-base opacity-70">
-            <p>Mood Level: {wordCount}</p>
-            <p>Score: {score.current}</p>
-          </div>
-          <div className="flex items-start gap-3 bg-transparent w-full">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
-              alt="Mira"
-              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white"
-            />
-            <div className="flex flex-col items-start">
-              <span className="text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0">
-                Mira
-              </span>
 
-              <div className="relative shadow-sm w-[160px] h-[160px] sm:w-[140px] sm:h-[140px] md:w-[200px] md:h-[200px] flex items-center justify-center">
-                {renderAvatar()}
+        {/* MAIN CONTAINER */}
+        <main
+          className="relative z-10 flex flex-col text-center gap-1 sm:gap-3 md:gap-2
+          rounded-none md:rounded-xl overflow-hidden shadow-gray-400/35 shadow-xl
+          w-full h-screen md:h-fit md:max-w-[500px]"
+        >
+          {/* Background hanya di dalam container */}
+          <div className="absolute inset-0 bg-[url('/bg.png')] bg-cover bg-center opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-purple-100 to-purple-50 opacity-80"></div>
+
+          {/* Header (disembunyikan di mobile) */}
+          <div className="relative hidden md:flex bg-white/60 backdrop-blur-sm p-3 pr-4 justify-between items-center w-full">
+            <div className="flex items-center gap-3">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
+                alt="Mira"
+                className="w-13 h-13 rounded-full object-cover bg-white"
+              />
+              <div>
+                <h4 className="text-xl font-bold mb-0 text-left">
+                  Mira {"<3"}
+                </h4>
+                <h4 className="text-left mb-0">Online</h4>
               </div>
             </div>
+            <h3 className="text-3xl font-bold mb-0">Score: {score.current}</h3>
           </div>
-          <div className="flex items-start gap-3 bg-transparent w-full">
+
+          {/* Header versi mobile (fix ke atas, WA style) */}
+          <div className="md:hidden sticky top-0 z-20 bg-white/70 backdrop-blur-sm flex items-center gap-3 px-4 py-3 shadow-sm">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
               alt="Mira"
-              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover bg-white"
+              className="w-10 h-10 rounded-full bg-white"
             />
-            <div className="flex flex-col items-start">
-              <span className="text-xs mb-1 sm:text-sm text-gray-600 font-semibold mb-0">
-                Mira
-              </span>
-              <div className="bg-white text-black shadow-sm px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-xl font-bold whitespace-pre-wrap">
-                {word}
+            <div className="flex-1 text-left">
+              <h4 className="text-lg font-bold leading-tight">Mira {"<3"}</h4>
+              <p className="text-xs text-gray-500">Online</p>
+            </div>
+            <p className="text-sm font-semibold text-gray-600">
+              Score: {score.current}
+            </p>
+          </div>
+
+          {/* Konten utama */}
+          <div className="relative w-full px-4 flex-1 overflow-y-auto">
+            <div className="flex justify-between mb-8 mt-3 w-full text-sm sm:text-base opacity-70">
+              <p>Mood Level: {wordCount}</p>
+              <p>Best: {highScore}</p>
+            </div>
+
+            {/* Avatar */}
+            <div className="flex items-start gap-3 mb-2 bg-transparent w-full">
+              <div className="flex flex-col items-start w-full">
+                <div className="relative shadow-xs flex items-center w-90 justify-center">
+                  {renderAvatar()}
+                </div>
+              </div>
+            </div>
+
+            {/* Kata target */}
+            <div className="flex items-start gap-3 bg-transparent w-full mb-3">
+              <div className="flex flex-col items-start">
+                <div className="bg-white/80 text-black shadow-xs px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-2xl whitespace-pre-wrap">
+                  {word}
+                </div>
+              </div>
+            </div>
+
+            {/* Input echo */}
+            <div className="flex flex-col items-end w-full">
+              <div className="shadow-xs bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none focus:outline-none">
+                {input || "your response"}{" "}
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-end w-full">
-            <span className="text-xs sm:text-sm text-gray-900 font-semibold mb-1">
-              Arhan
-            </span>
+
+          {/* Input utama */}
+          <div className="w-full z-10 p-3 backdrop-blur-sm">
             <input
-              placeholder={timeLeft === 0 ? "Game Over..." : "Your Response"}
+              type="text"
               value={input}
               onChange={handleValue}
               disabled={timeLeft === 0 || showLevelUp}
-              className="w-full shadow-sm bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none shadow-sm focus:outline-none"
+              placeholder={timeLeft === 0 ? "Game Over..." : "Your Response"}
+              className="w-full bg-white px-6 placeholder:text-gray-500 text-black text-lg sm:text-2xl py-2 sm:py-3 rounded-full shadow-sm focus:outline-none focus:inset-shadow-xs transition-all"
             />
           </div>
-          <p className="text-lg my-0 font-semibold text-gray-600">WPM: {wpm}</p>
         </main>
+
         {showLevelUp && (
           <ChatUI
             chatMessages={chatMessages}
@@ -510,7 +556,7 @@ export default function Home() {
               <h2 className="text-6xl sm:text-7xl font-bold text-[#ff5555] drop-shadow-[0_0_10px_#ff0000] mb-3 animate-pulse">
                 YOU DIED
               </h2>
-              <p className="text-xl sm:text-2xl mb-4 text-gray-200">
+              <p className="text-xl sm:text-3xl mb-4 text-gray-200">
                 {endMessage}
               </p>
 
@@ -567,7 +613,7 @@ export default function Home() {
     px-6 py-10 text-gray-800 overflow-y-auto animate-fadein"
       >
         <div className="max-w-[700px] bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left">
-          <h3 className="text-xl sm:text-2xl font-bold text-pink-600 mb-3">
+          <h3 className="text-xl sm:text-3xl font-bold text-pink-600 mb-3">
             🌸 Synopsis
           </h3>
           <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
@@ -592,7 +638,7 @@ export default function Home() {
         </div>
 
         <div className="max-w-[700px] mt-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left">
-          <h3 className="text-xl sm:text-2xl font-bold text-pink-600 mb-3">
+          <h3 className="text-xl sm:text-3xl font-bold text-pink-600 mb-3">
             🕹️ How to Play
           </h3>
           <ul className="list-disc list-inside text-gray-700 leading-relaxed text-base sm:text-lg space-y-2">
@@ -615,7 +661,7 @@ export default function Home() {
             </li>
           </ul>
         </div>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold my-6 drop-shadow">
+        <h2 className="text-3xl sm:text-3xl md:text-4xl font-extrabold my-6 drop-shadow">
           Multiverse {">"} Paperline: Fantastic Four
         </h2>
 
