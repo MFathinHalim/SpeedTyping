@@ -109,3 +109,44 @@ input::focus {
         opacity: 0;
     }
 }
+
+@keyframes fnfDeathZoom {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.2) rotate(2deg);
+        filter: brightness(0.5) saturate(2);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(0.3) contrast(2);
+    }
+}
+
+@keyframes fnfTextPop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.4);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes redPulse {
+    0% {
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+    50% {
+        background-color: rgba(255, 0, 0, 0.4);
+    }
+    100% {
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+}

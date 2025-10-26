@@ -122,6 +122,7 @@ export default function Home() {
   const [chatIndex, setChatIndex] = useState(0);
   const [storyLevels, setStoryLevels] = useState([]);
   const [currentLevel, setCurrentLevel] = useState(0);
+  const [showDeathScreen, setShowDeathScreen] = useState(false);
 
   const getStory = async () => {
     try {
@@ -278,6 +279,9 @@ export default function Home() {
             setIsRunning(false);
             setAvatarState("dead");
             playSfx("sad");
+            setTimeout(() => {
+              setShowDeathScreen(true);
+            }, 1000);
 
             if (startTime) {
               const timeElapsed = (Date.now() - startTime) / 60000;
@@ -379,7 +383,7 @@ export default function Home() {
         return (
           <img
             className="w-full h-full rounded-lg object-contain"
-            src="https://cdn.cdnstep.com/5dLoh8BM9UMZAC8rc0tY/4.webp"
+            src="/ded.jpg"
           />
         );
       default:
@@ -430,7 +434,9 @@ export default function Home() {
         font-sans text-gray-800 overflow-hidden
         min-h-screen md:pb-30 md:pt-20 md:flex md:justify-center md:p-6"
         style={{
-          filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
+          ...(timeLeft !== 0 && {
+            filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
+          }),
         }}
       >
         {/* Overlay efek idle */}
@@ -455,6 +461,9 @@ export default function Home() {
           className="relative z-10 flex flex-col text-center gap-1 sm:gap-3 md:gap-2
           rounded-none md:rounded-xl overflow-hidden shadow-gray-400/35 shadow-xl
           w-full h-screen md:h-fit md:max-w-[500px]"
+          style={{
+            paddingBottom: "env(safe-area-inset-bottom)", // buat iPhone
+          }}
         >
           {/* Background hanya di dalam container */}
           <div className="absolute inset-0 bg-[url('/bg.png')] bg-cover bg-center opacity-90"></div>
@@ -504,7 +513,7 @@ export default function Home() {
             {/* Avatar */}
             <div className="flex items-start gap-3 mb-2 bg-transparent w-full">
               <div className="flex flex-col items-start w-full">
-                <div className="relative shadow-xs flex items-center w-90 justify-center">
+                <div className="relative z-50 shadow-xs flex items-center w-50 md:w-90 justify-center">
                   {renderAvatar()}
                 </div>
               </div>
@@ -550,7 +559,7 @@ export default function Home() {
             handleSkip={handleSkip}
           />
         )}
-        {timeLeft === 0 && (
+        {showDeathScreen && (
           <>
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#2c0101]/80 text-center font-minecraft text-white select-none">
               <h2 className="text-6xl sm:text-7xl font-bold text-[#ff5555] drop-shadow-[0_0_10px_#ff0000] mb-3 animate-pulse">
