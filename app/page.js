@@ -443,9 +443,9 @@ export default function Home() {
   return (
     <>
       <div
-        className="relative bg-gradient-to-br from-pink-200 via-purple-100 to-purple-50
+        className="relative bg-[url('https://wallpapers.com/images/hd/purple-sky-anime-city-jfyl3kuulzsbh0oa.jpg')] bg-cover bg-center bg-gradient-to-br from-pink-200 via-purple-100 to-purple-50
         font-sans text-gray-800 overflow-hidden
-        md:pb-30 md:pt-20 md:flex md:justify-center md:p-6"
+        md:pb-30 md:pt-20 md:flex md:items-center md:justify-center md:p-6"
         style={{
           height: "calc(var(--vh, 1vh) * 100)",
           ...(timeLeft !== 0 && {
@@ -453,6 +453,8 @@ export default function Home() {
           }),
         }}
       >
+        <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-purple-100 to-purple-50 opacity-85"></div>
+
         {/* Overlay efek idle */}
         <div
           className="absolute inset-0 transition-all duration-500 pointer-events-none"
@@ -461,7 +463,6 @@ export default function Home() {
             mixBlendMode: "multiply",
           }}
         ></div>
-
         {/* Progress bar */}
         <div className="fixed z-10 top-0 left-0 w-full h-[6px] sm:h-[8px] bg-gray-700">
           <div
@@ -469,11 +470,10 @@ export default function Home() {
             style={{ width: `${progressWidth}%` }}
           />
         </div>
-
         {/* MAIN CONTAINER */}
         <main
           className="relative z-10 flex flex-col text-center gap-1 sm:gap-3 md:gap-2
-          rounded-none md:rounded-xl overflow-hidden shadow-gray-400/35 shadow-xl
+          rounded-none md:rounded-xl overflow-hidden shadow-gray-400/35 shadow-sm
           w-full h-full md:h-fit md:max-w-[500px]"
         >
           {/* Background hanya di dalam container */}
@@ -516,15 +516,15 @@ export default function Home() {
 
           {/* Konten utama */}
           <div className="relative w-full px-4 flex-1 overflow-y-auto">
-            <div className="flex justify-between mb-8 mt-3 w-full text-sm sm:text-base opacity-70">
+            <div className="flex justify-between mb-4 mt-3 w-full text-sm sm:text-base opacity-70">
               <p>Mood Level: {wordCount}</p>
               <p>Best: {highScore}</p>
             </div>
 
             {/* Avatar */}
-            <div className="flex items-start gap-3 mb-2 bg-transparent w-full">
+            <div className="flex items-start gap-3 mb-1 bg-transparent w-full">
               <div className="flex flex-col items-start w-full">
-                <div className="relative z-50 shadow-xs flex items-center w-50 md:w-90 justify-center">
+                <div className="relative z-50 shadow-sm flex items-center w-50 md:w-90 justify-center">
                   {renderAvatar()}
                 </div>
               </div>
@@ -533,15 +533,15 @@ export default function Home() {
             {/* Kata target */}
             <div className="flex items-start gap-3 bg-transparent w-full mb-3">
               <div className="flex flex-col items-start">
-                <div className="bg-white/80 text-black shadow-xs px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-2xl whitespace-pre-wrap">
+                <div className="bg-white/80 text-black shadow-sm px-4 py-2 sm:px-5 sm:py-3 rounded-2xl rounded-tl-none max-w-[100%] text-base sm:text-2xl whitespace-pre-wrap">
                   {word}
                 </div>
               </div>
             </div>
 
             {/* Input echo */}
-            <div className="flex flex-col items-end w-full">
-              <div className="shadow-xs bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none focus:outline-none">
+            <div className="flex flex-col items-end w-full mb-5">
+              <div className="shadow-sm bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none focus:outline-none">
                 {input || "your response"}{" "}
               </div>
             </div>
@@ -559,7 +559,6 @@ export default function Home() {
             />
           </div>
         </main>
-
         {showLevelUp && (
           <ChatUI
             chatMessages={chatMessages}
@@ -613,8 +612,8 @@ export default function Home() {
           </>
         )}
       </div>
-      <div className="w-full bg-white border-t z-20 border-black py-10 flex flex-col items-center text-center">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight">
+      <div className="w-full bg-white border-t z-20 border-black py-8 px-6 flex flex-col items-center text-center">
+        <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
           Try{" "}
           <a
             href="/training"
@@ -624,15 +623,15 @@ export default function Home() {
           </a>
         </h1>
 
-        <p className="text-gray-500 mt-3 text-base sm:text-lg">
-          Latih refleks dan kecepatanmu sebelum melawan dunia nyata 💪
+        <p className="text-gray-500 mt-3 text-xs">
+          Latih refleks dan kecepatanmu sebelum melawan dunia nyata
         </p>
       </div>
       <div
         className="w-full bg-gradient-to-br from-pink-100 via-yellow-50 to-blue-100 border-t inset-0 z-50 flex flex-col items-center justify-center
     px-6 py-10 text-gray-800 overflow-y-auto animate-fadein"
       >
-        <div className="max-w-[700px] bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left">
+        <div className="max-w-[700px] bg-white/80 backdrop-blur-md rounded-2xl shadow-sm p-6 sm:p-8 text-left">
           <h3 className="text-xl sm:text-3xl font-bold text-pink-600 mb-3">
             🌸 Synopsis
           </h3>
@@ -657,7 +656,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="max-w-[700px] mt-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 sm:p-8 text-left">
+        <div className="max-w-[700px] mt-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-sm p-6 sm:p-8 text-left">
           <h3 className="text-xl sm:text-3xl font-bold text-pink-600 mb-3">
             🕹️ How to Play
           </h3>
@@ -690,12 +689,12 @@ export default function Home() {
           <img
             src="/tim.png"
             alt="Our Team"
-            className="w-full max-w-[700px] rounded-xl transition-all duration-700 ease-in-out blur-lg group-hover:blur-none group-hover:scale-105 group-hover:rotate-1"
+            className="w-full max-w-[700px] rounded-xl transition-all duration-700 ease-in-out md:blur-lg group-hover:blur-none group-hover:scale-105 group-hover:rotate-1"
           />
         </div>
 
         {/* Team Members */}
-        <div className="text-base sm:text-lg md:text-xl space-y-3 bg-white/70 backdrop-blur-md px-6 py-6 rounded-2xl shadow-lg max-w-[700px] w-full">
+        <div className="text-base sm:text-lg md:text-xl space-y-3 bg-white/70 backdrop-blur-md px-6 py-6 rounded-2xl shadow-sm max-w-[700px] w-full">
           <p>
             <strong className="text-pink-600">Aqila Raya Syifa</strong> — 🎨{" "}
             <span className="font-medium">Illustrator</span>

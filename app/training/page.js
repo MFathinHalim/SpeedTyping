@@ -69,7 +69,7 @@ export default function Training() {
         Latihan mengetik tanpa batas waktu. Fokus ke kecepatan dan akurasi.
       </p>
 
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-[500px] text-center">
+      <div className="bg-gray-100 rounded-lg shadow-lg p-6 w-full max-w-[500px] text-center">
         <h3 className="text-2xl mb-2">Score: {score}</h3>
         <p className="text-gray-600 mb-4 text-lg">WPM: {wpm}</p>
 
@@ -77,9 +77,9 @@ export default function Training() {
           <img
             src="/happy.jpeg"
             alt="Mahiru"
-            className="w-10 h-10 rounded-full border-1 bg-white"
+            className="w-10 h-10 rounded-full shadow-sm bg-white"
           />
-          <div className="bg-gray-100 text-black border px-4 py-2 rounded-2xl rounded-tl-none shadow-sm text-xl font-bold flex-1 text-left">
+          <div className="bg-white text-black px-4 py-2 rounded-2xl rounded-tl-none shadow-sm text-xl font-bold flex-1 text-left">
             {word}
           </div>
         </div>
@@ -88,7 +88,7 @@ export default function Training() {
           placeholder="Ketik balasanmu di sini..."
           value={input}
           onChange={handleValue}
-          className="w-full border-1 bg-green-200 placeholder:text-gray-500 text-black text-lg px-4 py-2 rounded-2xl rounded-tr-none shadow-sm focus:outline-none"
+          className="w-full bg-green-200 placeholder:text-gray-500 text-black text-lg px-4 py-2 rounded-2xl rounded-tr-none shadow-sm focus:outline-none"
         />
       </div>
 
