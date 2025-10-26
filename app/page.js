@@ -123,29 +123,7 @@ export default function Home() {
   const [storyLevels, setStoryLevels] = useState([]);
   const [currentLevel, setCurrentLevel] = useState(0);
   const [showDeathScreen, setShowDeathScreen] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(0);
 
-  useEffect(() => {
-    // Hindari error waktu server-side render
-    if (typeof window === "undefined") return;
-
-    const updateHeight = () => {
-      const vh = window.visualViewport
-        ? window.visualViewport.height
-        : window.innerHeight;
-      setViewportHeight(vh);
-    };
-
-    updateHeight(); // langsung set pertama kali
-
-    window.visualViewport?.addEventListener("resize", updateHeight);
-    window.addEventListener("resize", updateHeight);
-
-    return () => {
-      window.visualViewport?.removeEventListener("resize", updateHeight);
-      window.removeEventListener("resize", updateHeight);
-    };
-  }, []);
   const getStory = async () => {
     try {
       const res = await fetch("/story.json");
@@ -442,6 +420,26 @@ export default function Home() {
     setChatIndex(allChats.length); // update index biar lanjut bisa muncul
   };
 
+  useEffect(() => {
+    const setViewportHeight = () => {
+      if (typeof window !== "undefined") {
+        const vh = window.visualViewport
+          ? window.visualViewport.height * 0.01
+          : window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
+      }
+    };
+
+    setViewportHeight();
+    window.visualViewport?.addEventListener("resize", setViewportHeight);
+    window.addEventListener("resize", setViewportHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", setViewportHeight);
+      window.removeEventListener("resize", setViewportHeight);
+    };
+  }, []);
+
   return (
     <>
       <div
@@ -452,7 +450,6 @@ export default function Home() {
           ...(timeLeft !== 0 && {
             filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
           }),
-          height: viewportHeight ? `${viewportHeight}px` : "100vh", // fallback aman
         }}
       >
         {/* Overlay efek idle */}
@@ -473,13 +470,21 @@ export default function Home() {
         </div>
 
         {/* MAIN CONTAINER */}
-        <main className="relative z-10 w-full max-w-full md:max-w-[500px] flex flex-col md:items-center text-center gap-1 sm:gap-3 md:gap-2 md:rounded-xl overflow-hidden shadow-gray-400/35 md:shadow-xl transition-all duration-300">
-          {/* Background */}
-          <div className="absolute inset-0 bg-[url('/bg.png')] bg-cover h-screen bg-center opacity-90"></div>
+        <main
+          className="relative z-10 flex flex-col text-center gap-1 sm:gap-3 md:gap-2
+          rounded-none md:rounded-xl overflow-hidden shadow-gray-400/35 shadow-xl
+          w-full h-fit md:h-fit md:max-w-[500px]"
+          style={{
+            height: "calc(var(--vh, 1vh) * 100)", // pakai custom var biar fix
+            paddingBottom: "env(safe-area-inset-bottom)", // buat iPhone
+          }}
+        >
+          {/* Background hanya di dalam container */}
+          <div className="absolute inset-0 bg-[url('/bg.png')] bg-cover bg-center opacity-90"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-purple-100 to-purple-50 opacity-80"></div>
 
-          {/* Konten utama */}
-          <div className="relative flex bg-white/60 backdrop-blur-sm p-3 pr-4 justify-between items-center w-full">
+          {/* Header (disembunyikan di mobile) */}
+          <div className="relative hidden md:flex bg-white/60 backdrop-blur-sm p-3 pr-4 justify-between items-center w-full">
             <div className="flex items-center gap-3">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
@@ -496,8 +501,24 @@ export default function Home() {
             <h3 className="text-3xl font-bold mb-0">Score: {score.current}</h3>
           </div>
 
-          {/* Input echo */}
-          <div className="relative w-full px-4 flex-1 overflow-y-auto pb-24">
+          {/* Header versi mobile (fix ke atas, WA style) */}
+          <div className="md:hidden sticky top-0 z-20 bg-white/70 backdrop-blur-sm flex items-center gap-3 px-4 py-3 shadow-sm">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx70H_HZYnQ1FgF1yuwGutKym0YGYg-U6dsA&s"
+              alt="Mira"
+              className="w-10 h-10 rounded-full bg-white"
+            />
+            <div className="flex-1 text-left">
+              <h4 className="text-lg font-bold leading-tight">Mira {"<3"}</h4>
+              <p className="text-xs text-gray-500">Online</p>
+            </div>
+            <p className="text-sm font-semibold text-gray-600">
+              Score: {score.current}
+            </p>
+          </div>
+
+          {/* Konten utama */}
+          <div className="relative w-full px-4 flex-1 overflow-y-auto">
             <div className="flex justify-between mb-8 mt-3 w-full text-sm sm:text-base opacity-70">
               <p>Mood Level: {wordCount}</p>
               <p>Best: {highScore}</p>
@@ -506,7 +527,7 @@ export default function Home() {
             {/* Avatar */}
             <div className="flex items-start gap-3 mb-2 bg-transparent w-full">
               <div className="flex flex-col items-start w-full">
-                <div className="relative shadow-xs flex items-center w-90 justify-center">
+                <div className="relative z-50 shadow-xs flex items-center w-50 md:w-90 justify-center">
                   {renderAvatar()}
                 </div>
               </div>
@@ -524,7 +545,7 @@ export default function Home() {
             {/* Input echo */}
             <div className="flex flex-col items-end w-full">
               <div className="shadow-xs bg-green-200 placeholder:text-gray-500 text-black text-lg sm:text-2xl px-4 sm:px-5 py-2 sm:py-3 rounded-2xl rounded-tr-none focus:outline-none">
-                {input || "your response"}
+                {input || "your response"}{" "}
               </div>
             </div>
           </div>
