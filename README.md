@@ -10,7 +10,7 @@ At 15, after a heated argument with your father, you finally earn permission to 
 But there’s a catch — you must still obey all his wishes and maintain your image as a “perfect model.”
 
 At first, school life feels strange and distant. Yet slowly, you begin to feel warmth you’ve never known before:
-laughter, friendship, and a girl named Mahiru, who sees you for who you truly are — not the designer’s son, but you.
+laughter, friendship, and a girl named Mira, who sees you for who you truly are — not the designer’s son, but you.
 
 ## 🎨 Features
 - 🌼 Original character art and illustrations
