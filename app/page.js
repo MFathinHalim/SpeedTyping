@@ -445,8 +445,9 @@ export default function Home() {
       <div
         className="relative bg-gradient-to-br from-pink-200 via-purple-100 to-purple-50
         font-sans text-gray-800 overflow-hidden
-        min-h-screen md:pb-30 md:pt-20 md:flex md:justify-center md:p-6"
+        md:pb-30 md:pt-20 md:flex md:justify-center md:p-6"
         style={{
+          height: "calc(var(--vh, 1vh) * 100)",
           ...(timeLeft !== 0 && {
             filter: `brightness(${1 - Math.min(idleTime / 10, 0.3)})`,
           }),
@@ -473,11 +474,7 @@ export default function Home() {
         <main
           className="relative z-10 flex flex-col text-center gap-1 sm:gap-3 md:gap-2
           rounded-none md:rounded-xl overflow-hidden shadow-gray-400/35 shadow-xl
-          w-full h-fit md:h-fit md:max-w-[500px]"
-          style={{
-            height: "calc(var(--vh, 1vh) * 100)", // pakai custom var biar fix
-            paddingBottom: "env(safe-area-inset-bottom)", // buat iPhone
-          }}
+          w-full h-full md:h-fit md:max-w-[500px]"
         >
           {/* Background hanya di dalam container */}
           <div className="absolute inset-0 bg-[url('/bg.png')] bg-cover bg-center opacity-90"></div>
